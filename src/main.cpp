@@ -7,12 +7,20 @@
 #include <Geode/modify/SecretRewardsLayer.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
 #include <Geode/modify/LevelSelectLayer.hpp>
+#include <Geode/modify/LevelSearchLayer.hpp>
+#include <Geode/ui/BasedButtonSprite.hpp>
 using namespace geode::prelude;
 
 static void removeCorners(auto _this)
 {
     // if remove corners is off, skip everything
     if (!Mod::get()->getSettingValue<bool>("remove-corners")) return;
+
+    if (auto p = _this->getChildByIDRecursive("bottom-left-art"))   p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("bottom-right-art"))  p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("left-corner"))       p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("right-corner"))      p->setVisible(false);
+
 
     // self-explanatory what this does
     auto nodes = _this->getChildren();
@@ -22,7 +30,8 @@ static void removeCorners(auto _this)
         {
             if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
             {
-                if ((spriteNode->getZOrder() == 1 || spriteNode->getZOrder() == -1) && spriteNode->getPositionY() != 321)
+                bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
+                if ((spriteNode->getZOrder() == 1 || spriteNode->getZOrder() == -1) && !couldThisBeLevelTopper)
                 {
                     spriteNode->setVisible(false);
                 }
@@ -33,6 +42,11 @@ static void removeCorners(auto _this)
 
 class $modify(MenuLayer)
 {
+    static void onModify(auto & self)
+    {
+        self.setHookPriority("MenuLayer::init", -100);
+    }
+
     bool init()
     {
         if (!MenuLayer::init()) return false;
@@ -56,9 +70,26 @@ class $modify(MenuLayer)
         if (Mod::get()->getSettingValue<bool>("title-buttons"))
         {
             // remove newgrounds button + move geode button to where it used to be
-            this->getChildByIDRecursive("newgrounds-button")->setVisible(false);
-            this->getChildByIDRecursive("geode.loader/geode-button")->setPositionX(229.25);
+            auto ng = this->getChildByIDRecursive("newgrounds-button");
+            ng->setVisible(false);
+            this->getChildByIDRecursive("geode.loader/geode-button")->setPositionX(ng->getPositionX());
             this->getChildByIDRecursive("bottom-menu")->setPositionX(313.5);
+        }
+
+        if (Mod::get()->getSettingValue<bool>("replace-more-games-w-texture"))
+        {
+            // replace more games button with texture selector
+            auto obj = this->getChildByIDRecursive("right-side-menu")->getChildren()->objectAtIndex(1);
+            auto moregames = this->getChildByIDRecursive("more-games-menu");
+
+            if (auto texSelector = typeinfo_cast<CCMenuItemSpriteExtra*>(obj))
+            {
+                moregames->setVisible(false);
+
+                texSelector->setPositionX(26.25);
+                texSelector->setPositionY(-49.5);
+                texSelector->setScale(1.175);
+            }
         }
 
         return true;
@@ -102,7 +133,8 @@ class $modify(CreatorLayer)
                 biButton->setPositionY(28);
             }
         }
-        else if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu")) biButton->setZOrder(1);
+
+        if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu")) biButton->setZOrder(1);
 
         // then remove the corners
         removeCorners(this);
@@ -117,12 +149,7 @@ class $modify(LevelInfoLayer)
     {
         if (!LevelInfoLayer::init(p0, p1)) return false;
 
-        if (Mod::get()->getSettingValue<bool>("remove-corners"))
-        {
-            // remove corners
-            this->getChildByIDRecursive("bottom-left-art")->setVisible(false);
-            this->getChildByIDRecursive("bottom-right-art")->setVisible(false);
-        }
+        removeCorners(this);
 
         return true;
     }
@@ -160,6 +187,19 @@ class $modify(SecretRewardsLayer)
     bool init(bool p0)
     {
         if (!SecretRewardsLayer::init(p0)) return false;
+
+        removeCorners(this);
+
+        return true;
+    }
+};
+
+// remove corners
+class $modify(LevelSearchLayer)
+{
+    bool init(bool p0)
+    {
+        if (!LevelSearchLayer::init(p0)) return false;
 
         removeCorners(this);
 
