@@ -1,11 +1,11 @@
 {
 	"geode": "2.0.0-beta.9",
 	"gd": "2.204",
-	"version": "v1.2.0",
-	"id": "undefined0.stuff",
-	"name": "stuff mod",
+	"version": "v1.2.1",
+	"id": "undefined0.gdtweaks",
+	"name": "GDTweaks",
 	"developer": "undefined0",
-	"description": "does random stuff (real)",
+	"description": "tweak the geometry",
 	"dependencies": [
 		{
 			"id": "geode.texture-loader",
