@@ -8,7 +8,8 @@
 #include <Geode/modify/LevelBrowserLayer.hpp>
 #include <Geode/modify/LevelSelectLayer.hpp>
 #include <Geode/modify/LevelSearchLayer.hpp>
-#include <Geode/ui/BasedButtonSprite.hpp>
+#include <Geode/modify/DailyLevelPage.hpp>
+#include <Geode/modify/RewardsPage.hpp>
 using namespace geode::prelude;
 
 static void removeCorners(auto _this)
@@ -16,11 +17,15 @@ static void removeCorners(auto _this)
     // if remove corners is off, skip everything
     if (!Mod::get()->getSettingValue<bool>("remove-corners")) return;
 
-    if (auto p = _this->getChildByIDRecursive("bottom-left-art"))   p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("bottom-right-art"))  p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("left-corner"))       p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("right-corner"))      p->setVisible(false);
-
+    // crazy code
+    if (auto p = _this->getChildByIDRecursive("left-corner"))           p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("right-corner"))          p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("bottom-left-art"))       p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("bottom-right-art"))      p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("top-left-corner"))       p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("top-right-corner"))      p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("bottom-left-corner"))    p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("bottom-right-corner"))   p->setVisible(false);
 
     // self-explanatory what this does
     auto nodes = _this->getChildren();
@@ -73,12 +78,15 @@ class $modify(MenuLayer)
             auto ng = this->getChildByIDRecursive("newgrounds-button");
             ng->setVisible(false);
             this->getChildByIDRecursive("geode.loader/geode-button")->setPositionX(ng->getPositionX());
-            this->getChildByIDRecursive("bottom-menu")->setPositionX(313.5);
+            auto btm = this->getChildByIDRecursive("bottom-menu");
+            btm->setPositionX(btm->getPositionX() + 29); // shift over by 29
         }
 
         if (Mod::get()->getSettingValue<bool>("replace-more-games-w-texture"))
         {
             // replace more games button with texture selector
+            // alright so I know that this is probably definitely bad practice to use objectAtIndex but
+            // it's the only way to get this afaik and to be honest what other mods actually use the right side menu?
             auto obj = this->getChildByIDRecursive("right-side-menu")->getChildren()->objectAtIndex(1);
             auto moregames = this->getChildByIDRecursive("more-games-menu");
 
@@ -88,11 +96,19 @@ class $modify(MenuLayer)
 
                 texSelector->setPositionX(26.25);
                 texSelector->setPositionY(-49.5);
-                texSelector->setScale(1.175);
             }
         }
 
         return true;
+    }
+
+    void onPlay(CCObject* sender)
+    {
+        MenuLayer::onPlay(sender);
+
+        if (!Mod::get()->getSettingValue<bool>("fire-in-the-hole")) return;
+
+        FMODAudioEngine::sharedEngine()->playEffect("fire.ogg"_spr);
     }
 };
 
@@ -207,6 +223,19 @@ class $modify(LevelSearchLayer)
     }
 };
 
+// remove corners
+class $modify(DailyLevelPage)
+{
+    bool init(GJTimedLevelType p0)
+    {
+        if (!DailyLevelPage::init(p0)) return false;
+
+        removeCorners(this);
+
+        return true;
+    }
+};
+
 // remove corners + fix joystick icon pos
 class $modify(LevelBrowserLayer)
 {
@@ -225,10 +254,11 @@ class $modify(LevelBrowserLayer)
                     if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
                     {
                         // test if it's in the correct position to be the controller buttons
+                        // there may be a better way to test this but not that I know of
                         if (spriteNode->getPositionX() == 545)
                         {
                             // if so then fix it
-                            spriteNode->setPositionY(spriteNode->getPositionY() - 144);
+                            spriteNode->setPositionY(spriteNode->getPositionY() - 110);
                             spriteNode->setPositionX(30);
                         }
                     }
@@ -259,7 +289,8 @@ class $modify(LevelSelectLayer)
                 {
                     if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
                     {
-                        if (spriteNode->getPositionY() == 321)
+                        bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
+                        if (couldThisBeLevelTopper)
                         {
                             spriteNode->setVisible(false);
                         }

@@ -1,17 +1,36 @@
 {
 	"geode": "2.0.0-beta.9",
 	"gd": "2.204",
-	"version": "v1.1.0",
+	"version": "v1.2.0",
 	"id": "undefined0.stuff",
 	"name": "stuff mod",
 	"developer": "undefined0",
-	"description": "does random stuff yeah good",
+	"description": "does random stuff (real)",
+	"dependencies": [
+		{
+			"id": "geode.texture-loader",
+			"version": "v1.4.1",
+			"importance": "suggested"
+		},
+		{
+			"id": "cvolton.betterinfo",
+			"version": "v4.0.0-alpha.9",
+			"importance": "suggested"
+		}
+	],
+
+	"resources": {
+		"files": [
+			"resources/fire.ogg"
+		]
+	},
+
 	"settings": {
 		"title-text": {
 			"name": "Change title text",
 			"description": "Whether the title screen Geometry Dash text gets skewed.",
 			"type": "bool",
-			"default": true
+			"default": false
 		},
 		"title-buttons": {
 			"name": "Change title buttons",
@@ -35,7 +54,7 @@
 			"name": "Remove level select topper",
 			"description": "Whether the top bar thingymabob gets removed from the main level select screen.",
 			"type": "bool",
-			"default": true
+			"default": false
 		},
 		"fix-joystick-scroll": {
 			"name": "Fix joystick indicator",
@@ -45,15 +64,21 @@
 		},
 		"move-betterinfo": {
 			"name": "Move BetterInfo button",
-			"description": "Whether the BetterInfo button gets moved into the corner. *Texture Loader mod must be installed.",
+			"description": "Whether the BetterInfo button gets moved into the corner. *BetterInfo must be installed.",
 			"type": "bool",
 			"default": true
 		},
 		"replace-more-games-w-texture": {
 			"name": "Replace \"More Games\" with texture pack",
-			"description": "Whether the More Games button on the title screen gets replaced with the texture pack selector. *Texture Loader mod must be installed.",
+			"description": "Whether the More Games button on the title screen gets replaced with the texture pack selector. *Texture Loader must be installed.",
 			"type": "bool",
 			"default": true
+		},
+		"fire-in-the-hole": {
+			"name": "FIRE IN THE HOLE",
+			"description": "Whether the play button on the title screen plays \"FIRE IN THE HOLE\" when clicked.",
+			"type": "bool",
+			"default": false
 		}
 	}
 }
