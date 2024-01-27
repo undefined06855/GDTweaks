@@ -4,11 +4,12 @@
 		"win": "2.204",
 		"android": "2.205"
 	},
-	"version": "v1.2.2",
+	"version": "v1.3.0",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
 	"description": "tweak the geometry",
+	"repository": "https://github.com/undefined06855/StuffMod",
 	"dependencies": [
 		{
 			"id": "geode.texture-loader",
@@ -82,6 +83,18 @@
 			"description": "Whether the play button on the title screen plays \"FIRE IN THE HOLE\" when clicked.",
 			"type": "bool",
 			"default": false
+		},
+		"garage-bg-remove": {
+			"name": "Remove icon kit's icon selector background",
+			"description": "Whether the background behind the icons in the icon kit should be removed.",
+			"type": "bool",
+			"default": false
+		},
+		"garage-lock-tap-remove": {
+			"name": "Remove \"Tap lock for more info!\" message",
+			"description": "Whether the \"Tap lock for more info!\" message in the icon kit should be removed.",
+			"type": "bool",
+			"default": true
 		}
 	}
 }

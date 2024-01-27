@@ -1,4 +1,10 @@
+// warning: shitty code incoming
+// good luck reading it, i should probably split it up into multiple files
 #include <Geode/Geode.hpp>
+
+// this is only for removing corners on most layers
+// geode should allow having a thing that runs on almost every layer's
+// initialise function
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/CreatorLayer.hpp>
 #include <Geode/modify/LevelInfoLayer.hpp>
@@ -10,6 +16,7 @@
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include <Geode/modify/DailyLevelPage.hpp>
 #include <Geode/modify/RewardsPage.hpp>
+//#include <Geode/modify/RewardUnlockLayer.hpp> // rewardunlocklayer doesn't have an init() yet
 using namespace geode::prelude;
 
 static void removeCorners(auto _this)
@@ -20,8 +27,12 @@ static void removeCorners(auto _this)
     // crazy code
     if (auto p = _this->getChildByIDRecursive("left-corner"))           p->setVisible(false);
     if (auto p = _this->getChildByIDRecursive("right-corner"))          p->setVisible(false);
+
+    if (auto p = _this->getChildByIDRecursive("top-left-art"))          p->setVisible(false);
+    if (auto p = _this->getChildByIDRecursive("top-right-art"))         p->setVisible(false);
     if (auto p = _this->getChildByIDRecursive("bottom-left-art"))       p->setVisible(false);
     if (auto p = _this->getChildByIDRecursive("bottom-right-art"))      p->setVisible(false);
+
     if (auto p = _this->getChildByIDRecursive("top-left-corner"))       p->setVisible(false);
     if (auto p = _this->getChildByIDRecursive("top-right-corner"))      p->setVisible(false);
     if (auto p = _this->getChildByIDRecursive("bottom-left-corner"))    p->setVisible(false);
@@ -31,24 +42,32 @@ static void removeCorners(auto _this)
     auto nodes = _this->getChildren();
     for (int i = 0; i < _this->getChildrenCount(); ++i)
     {
-        if (auto node = nodes->objectAtIndex(i))
+        auto node = nodes->objectAtIndex(i);
+
+        if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
         {
-            if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
+            bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
+            if ((spriteNode->getZOrder() == 1 || spriteNode->getZOrder() == -1) && !couldThisBeLevelTopper)
             {
-                bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
-                if ((spriteNode->getZOrder() == 1 || spriteNode->getZOrder() == -1) && !couldThisBeLevelTopper)
-                {
-                    spriteNode->setVisible(false);
-                }
+                spriteNode->setVisible(false);
             }
         }
+        /*
+        else if (auto spriteNode = typeinfo_cast<CCSpriteWithHue*>(node))
+        {
+            // this is for the corners in RewardUnlockLayer
+            if (spriteNode->getZOrder() == 8)
+                spriteNode->setVisible(false);
+        }
+        */
     }
-}
+};
 
 class $modify(MenuLayer)
 {
     static void onModify(auto & self)
     {
+        // run after texture selector
         self.setHookPriority("MenuLayer::init", -100);
     }
 
@@ -116,12 +135,14 @@ class $modify(CreatorLayer)
 {
     static void onModify(auto& self)
     {
+        // run after betterinfo
         self.setHookPriority("CreatorLayer::init", -100);
     }
 
     bool init()
     {
         if (!CreatorLayer::init()) return false;
+
         if (Mod::get()->getSettingValue<bool>("map-packs"))
         {
             // remove map packs
@@ -184,12 +205,53 @@ class $modify(GauntletSelectLayer)
     }
 };
 
-// remove corners
 class $modify(GJGarageLayer)
 {
+    static void onModify(auto & self)
+    {
+        self.setHookPriority("GJGarageLayer::init", 100);
+    }
+
     bool init()
     {
         if (!GJGarageLayer::init()) return false;
+                
+        if (Mod::get()->getSettingValue<bool>("garage-bg-remove"))
+        {
+            // remove the background from the icon kit
+            if (auto bg = typeinfo_cast<CCScale9Sprite*>(this->getChildren()->objectAtIndex(8)))
+                bg->setVisible(false);
+        }
+
+        if (Mod::get()->getSettingValue<bool>("garage-lock-tap-remove"))
+        {
+            // remove tap for more info lock
+            if (auto lock = typeinfo_cast<CCSprite*>(this->getChildren()->objectAtIndex(9)))
+                lock->setVisible(false);
+
+            // shuffle everything around
+            // my excuse for the overuse of objectAtIndex is that literally nobody edits the icon kit
+            // also how else am I meant to grab them there's no node ids
+
+
+            //if (auto icons = typeinfo_cast<ListButtonBar*>(this->getChildren()->objectAtIndex(14)))
+            //    icons->setPositionY(12);
+
+            if (auto player = typeinfo_cast<SimplePlayer*>(this->getChildren()->objectAtIndex(7)))
+                player->setPositionY(222);
+
+            if (auto iconTypeSelector = typeinfo_cast<CCMenu*>(this->getChildren()->objectAtIndex(10)))
+            {
+                iconTypeSelector->setPositionY(171);
+                if (auto leftArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(11)))
+                    leftArrow->setPositionY(-75);
+                if (auto rightArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(12)))
+                    rightArrow->setPositionY(-75);
+            }
+
+            if (auto weirdGroundLineThing = typeinfo_cast<CCSprite*>(this->getChildren()->objectAtIndex(6)))
+                weirdGroundLineThing->setPositionY(197);
+        }
 
         removeCorners(this);
 
@@ -213,9 +275,22 @@ class $modify(SecretRewardsLayer)
 // remove corners
 class $modify(LevelSearchLayer)
 {
-    bool init(bool p0)
+    bool init(int p0)
     {
         if (!LevelSearchLayer::init(p0)) return false;
+
+        removeCorners(this);
+
+        return true;
+    }
+};
+
+// remove corners
+class $modify(RewardsPage)
+{
+    bool init()
+    {
+        if (!RewardsPage::init()) return false;
 
         removeCorners(this);
 
@@ -249,18 +324,17 @@ class $modify(LevelBrowserLayer)
             auto nodes = this->getChildren();
             for (int i = 0; i < this->getChildrenCount(); ++i)
             {
-                if (auto node = nodes->objectAtIndex(i))
+                auto node = nodes->objectAtIndex(i);
+
+                if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
                 {
-                    if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
+                    // test if it's in the correct position to be the controller buttons
+                    // there may be a better way to test this but not that I know of
+                    if (spriteNode->getPositionX() == 545)
                     {
-                        // test if it's in the correct position to be the controller buttons
-                        // there may be a better way to test this but not that I know of
-                        if (spriteNode->getPositionX() == 545)
-                        {
-                            // if so then fix it
-                            spriteNode->setPositionY(spriteNode->getPositionY() - 110);
-                            spriteNode->setPositionX(30);
-                        }
+                        // if so then fix it
+                        spriteNode->setPositionY(spriteNode->getPositionY() - 110);
+                        spriteNode->setPositionX(30);
                     }
                 }
             }
@@ -285,16 +359,12 @@ class $modify(LevelSelectLayer)
             auto nodes = this->getChildren();
             for (int i = 0; i < this->getChildrenCount(); ++i)
             {
-                if (auto node = nodes->objectAtIndex(i))
+                auto node = nodes->objectAtIndex(i);
+                if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
                 {
-                    if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
-                    {
-                        bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
-                        if (couldThisBeLevelTopper)
-                        {
-                            spriteNode->setVisible(false);
-                        }
-                    }
+                    bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
+                    if (couldThisBeLevelTopper)
+                        spriteNode->setVisible(false);
                 }
             }
         }
