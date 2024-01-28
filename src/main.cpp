@@ -195,6 +195,23 @@ class $modify(MenuLayer)
             }
         }
 
+        if (Mod::get()->getSettingValue<bool>("remove-main-menu-ground"))
+        {
+            if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
+            {
+                auto nodes = mainMenuBG->getChildren();
+                for (int i = 1; i < mainMenuBG->getChildrenCount(); i++)
+                {
+                    auto node = nodes->objectAtIndex(i);
+                    if (auto n = typeinfo_cast<GJGroundLayer*>(node)) n->setVisible(false);
+                    if (auto n = typeinfo_cast<CCMotionStreak*>(node)) n->setVisible(false);
+                    if (auto n = typeinfo_cast<HardStreak*>(node)) n->setVisible(false);
+                    if (auto n = typeinfo_cast<PlayerObject*>(node)) n->setVisible(false);
+                    if (auto n = typeinfo_cast<CCParticleSystemQuad*>(node)) n->setVisible(false);
+                }
+            }
+        }
+
         return true;
     }
 
