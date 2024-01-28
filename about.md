@@ -1,4 +1,4 @@
-# stuff and things
+# GDTweaks<br>by [undefined0](user:13351341)
 
 Miscellaneous things to change the game if you want, dunno really
 
