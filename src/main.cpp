@@ -16,7 +16,15 @@
 #include <Geode/modify/LevelSearchLayer.hpp>
 #include <Geode/modify/DailyLevelPage.hpp>
 #include <Geode/modify/RewardsPage.hpp>
-//#include <Geode/modify/RewardUnlockLayer.hpp> // rewardunlocklayer doesn't have an init() yet
+//#include <Geode/modify/RewardUnlockLayer.hpp> // rewardunlocklayer doesn't have an init() yet sadly
+
+#include <random>
+// setup random stuff for the random background + ground
+std::random_device dev;
+std::mt19937 rng(dev());
+std::uniform_int_distribution<std::mt19937::result_type> distBG(1, 59);
+std::uniform_int_distribution<std::mt19937::result_type> distGround(1, 22);
+
 using namespace geode::prelude;
 
 static void removeCorners(auto _this)
@@ -91,6 +99,20 @@ class $modify(MenuLayer)
             this->getChildByIDRecursive("main-menu-bg")->setZOrder(-2);
         }
 
+        if (Mod::get()->getSettingValue<bool>("fix-main-menu-settings-gamepad"))
+        {
+            //if (auto settingsButton = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("settings-button")))
+            //{
+            // this is added by geode, so should exist in theory, but might as well check for nullptr anyway
+            if (auto controllerIcon = typeinfo_cast<CCSprite*>(this->getChildByIDRecursive("settings-gamepad-icon")))
+            {
+                // wowee magic numbers
+                // I hope this isnt broken on widescreen
+                controllerIcon->setPositionX(255.0f);
+            }
+            //}
+        }
+
         if (Mod::get()->getSettingValue<bool>("title-buttons"))
         {
             // remove newgrounds button + move geode button to where it used to be
@@ -117,11 +139,66 @@ class $modify(MenuLayer)
                 texSelector->setPositionY(-49.5);
             }
         }
+        
+        if (Mod::get()->getSettingValue<bool>("randomise-main-menu-bg"))
+        {
+            if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
+            {
+                if (auto tex = typeinfo_cast<CCTextureProtocol*>(mainMenuBG->getChildren()->objectAtIndex(0))) {
+                    std::string rand = std::to_string(distBG(rng));
+                    if (rand.length() == 1)
+                        rand = "0" + rand;
+                    std::string string = "game_bg_" + rand + "_001-uhd.png";
+
+                    // literally had to follow a 10 YEAR OLD STACKOVERFLOW POST for this to work
+                    // https://stackoverflow.com/a/21699549
+                    auto newTexture = CCSprite::create(string.c_str());
+                    ccTexParams tp = { GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT };
+                    newTexture->getTexture()->setTexParameters(&tp);
+                    tex->setTexture(newTexture->getTexture());
+                }
+
+                // alright so I would implement ground stuff
+                // except some grounds need 2 layers
+                // and i cant create a second layer since it wont move and stuff
+                /*
+                if (auto groundLayer = typeinfo_cast<GJGroundLayer*>(mainMenuBG->getChildren()->objectAtIndex(1)))
+                {
+                    std::string rand = std::to_string(distGround(rng));
+                    if (rand.length() == 1)
+                        rand = "0" + rand;
+                    std::string string = "groundSquare_" + rand + "_001-uhd.png";
+                    std::string string2 = "groundSquare_" + rand + "_2_001-uhd.png";
+
+                    if (auto batchNode = typeinfo_cast<CCSpriteBatchNode*>(groundLayer->getChildren()->objectAtIndex(3)))
+                    {
+                        auto newTexture = CCSprite::create(string.c_str());
+                        batchNode->setTexture(newTexture->getTexture());
+                    }
+
+                    auto newTexture = CCSprite::create(string2.c_str());
+                    try
+                    {
+                        if (auto batchNode = typeinfo_cast<CCSpriteBatchNode*>(groundLayer->getChildren()->objectAtIndex(4)))
+                        {
+                            batchNode->setTexture(newTexture->getTexture());
+                        }
+                    }
+                    catch(std::exception& e)
+                    {
+                        // doenst exist
+                        auto batchNode2 = CCSpriteBatchNode::createWithTexture(newTexture->getTexture());
+                        groundLayer->addChild(batchNode2);
+                    }
+                }
+                */
+            }
+        }
 
         return true;
     }
 
-    void onPlay(CCObject* sender)
+    void onPlay(CCObject * sender)
     {
         MenuLayer::onPlay(sender);
 
@@ -133,7 +210,7 @@ class $modify(MenuLayer)
 
 class $modify(CreatorLayer)
 {
-    static void onModify(auto& self)
+    static void onModify(auto & self)
     {
         // run after betterinfo
         self.setHookPriority("CreatorLayer::init", -100);
@@ -158,7 +235,7 @@ class $modify(CreatorLayer)
             this->getChildByIDRecursive("event-button")->setPositionX(273.55);
             this->getChildByIDRecursive("gauntlets-button")->setPositionX(370.65);
         }
-        
+
         if (Mod::get()->getSettingValue<bool>("move-betterinfo"))
         {
             // move betterinfo button to bottom left (if it exists)
@@ -180,11 +257,148 @@ class $modify(CreatorLayer)
     }
 };
 
+class $modify(GJGarageLayer)
+{
+    static void onModify(auto & self)
+    {
+        self.setHookPriority("GJGarageLayer::init", 100);
+    }
+
+    bool init()
+    {
+        if (!GJGarageLayer::init()) return false;
+
+        if (Mod::get()->getSettingValue<bool>("garage-bg-remove"))
+        {
+            // remove the background from the icon kit
+            if (auto bg = typeinfo_cast<CCScale9Sprite*>(this->getChildren()->objectAtIndex(8)))
+                bg->setVisible(false);
+        }
+
+        if (Mod::get()->getSettingValue<bool>("garage-lock-tap-remove"))
+        {
+            // remove tap for more info lock
+            if (auto lock = typeinfo_cast<CCSprite*>(this->getChildren()->objectAtIndex(9)))
+                lock->setVisible(false);
+
+            // shuffle everything around
+            // my excuse for the overuse of objectAtIndex is that literally nobody edits the icon kit
+            // also how else am I meant to grab them (without looping through every node) there's no node ids
+            // also the option literally says there may be a lot of mod incompatiblities using this
+
+            if (auto playerIconPreview = typeinfo_cast<SimplePlayer*>(this->getChildren()->objectAtIndex(7)))
+                playerIconPreview->setPositionY(222);
+
+            if (auto iconTypeSelector = typeinfo_cast<CCMenu*>(this->getChildren()->objectAtIndex(10)))
+            {
+                iconTypeSelector->setPositionY(171);
+                // for whatever reason the left and right arrows are in the icon type selector thingymabob
+                if (auto leftArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(11)))
+                    leftArrow->setPositionY(-75);
+                if (auto rightArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(12)))
+                    rightArrow->setPositionY(-75);
+            }
+
+            if (auto weirdGroundLineThing = typeinfo_cast<CCSprite*>(this->getChildren()->objectAtIndex(6)))
+                weirdGroundLineThing->setPositionY(197);
+        }
+
+        removeCorners(this);
+
+        return true;
+    }
+};
+
+// remove corners + fix joystick icon pos
+class $modify(LevelBrowserLayer)
+{
+    bool init(GJSearchObject * p0)
+    {
+        if (!LevelBrowserLayer::init(p0)) return false;
+
+        // put joystick controller stuff in correct position
+        if (Mod::get()->getSettingValue<bool>("fix-joystick-scroll"))
+        {
+            auto nodes = this->getChildren();
+            for (int i = 0; i < this->getChildrenCount(); ++i)
+            {
+                auto node = nodes->objectAtIndex(i);
+
+                if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
+                {
+                    // test if it's in the correct position to be the controller buttons
+                    // there may be a better way to test this but not that I know of
+                    if (spriteNode->getPositionX() == 545)
+                    {
+                        // if so then fix it
+                        spriteNode->setPositionY(spriteNode->getPositionY() - 140);
+                        spriteNode->setPositionX(30);
+                    }
+                }
+            }
+        }
+
+        // and obviously remove corners
+        removeCorners(this);
+
+        return true;
+    }
+};
+
+// remove corners and remove the topper thing
+class $modify(LevelSelectLayer)
+{
+    bool init(int p0)
+    {
+        if (!LevelSelectLayer::init(p0)) return false;
+
+        // remove level select topper if that's enabled
+        if (Mod::get()->getSettingValue<bool>("remove-level-select-top"))
+        {
+            auto nodes = this->getChildren();
+            for (int i = 0; i < this->getChildrenCount(); ++i)
+            {
+                auto node = nodes->objectAtIndex(i);
+                if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
+                {
+                    bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
+                    if (couldThisBeLevelTopper)
+                        spriteNode->setVisible(false);
+                }
+            }
+        }
+
+        // and remove corners
+        removeCorners(this);
+
+        return true;
+    }
+};
+
+// --- The rest of the code is just for removing corners from some layers -------------------------------------------------------------
+#pragma region corner stuff (basically just ignore this)
+//#region corner stuff (basically just ignore this)
+
+// remove corners
 class $modify(LevelInfoLayer)
 {
     bool init(GJGameLevel * p0, bool p1)
     {
         if (!LevelInfoLayer::init(p0, p1)) return false;
+
+        removeCorners(this);
+
+        return true;
+    }
+};
+
+// remove corners
+// TODO: enter key runs `LevelSearchLayer::onSearch(nullptr);`
+class $modify(LevelSearchLayer)
+{
+    bool init(int p0)
+    {
+        if (!LevelSearchLayer::init(p0)) return false;
 
         removeCorners(this);
 
@@ -205,79 +419,12 @@ class $modify(GauntletSelectLayer)
     }
 };
 
-class $modify(GJGarageLayer)
-{
-    static void onModify(auto & self)
-    {
-        self.setHookPriority("GJGarageLayer::init", 100);
-    }
-
-    bool init()
-    {
-        if (!GJGarageLayer::init()) return false;
-                
-        if (Mod::get()->getSettingValue<bool>("garage-bg-remove"))
-        {
-            // remove the background from the icon kit
-            if (auto bg = typeinfo_cast<CCScale9Sprite*>(this->getChildren()->objectAtIndex(8)))
-                bg->setVisible(false);
-        }
-
-        if (Mod::get()->getSettingValue<bool>("garage-lock-tap-remove"))
-        {
-            // remove tap for more info lock
-            if (auto lock = typeinfo_cast<CCSprite*>(this->getChildren()->objectAtIndex(9)))
-                lock->setVisible(false);
-
-            // shuffle everything around
-            // my excuse for the overuse of objectAtIndex is that literally nobody edits the icon kit
-            // also how else am I meant to grab them there's no node ids
-
-
-            //if (auto icons = typeinfo_cast<ListButtonBar*>(this->getChildren()->objectAtIndex(14)))
-            //    icons->setPositionY(12);
-
-            if (auto player = typeinfo_cast<SimplePlayer*>(this->getChildren()->objectAtIndex(7)))
-                player->setPositionY(222);
-
-            if (auto iconTypeSelector = typeinfo_cast<CCMenu*>(this->getChildren()->objectAtIndex(10)))
-            {
-                iconTypeSelector->setPositionY(171);
-                if (auto leftArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(11)))
-                    leftArrow->setPositionY(-75);
-                if (auto rightArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(12)))
-                    rightArrow->setPositionY(-75);
-            }
-
-            if (auto weirdGroundLineThing = typeinfo_cast<CCSprite*>(this->getChildren()->objectAtIndex(6)))
-                weirdGroundLineThing->setPositionY(197);
-        }
-
-        removeCorners(this);
-
-        return true;
-    }
-};
-
 // remove corners
 class $modify(SecretRewardsLayer)
 {
     bool init(bool p0)
     {
         if (!SecretRewardsLayer::init(p0)) return false;
-
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-// remove corners
-class $modify(LevelSearchLayer)
-{
-    bool init(int p0)
-    {
-        if (!LevelSearchLayer::init(p0)) return false;
 
         removeCorners(this);
 
@@ -311,66 +458,5 @@ class $modify(DailyLevelPage)
     }
 };
 
-// remove corners + fix joystick icon pos
-class $modify(LevelBrowserLayer)
-{
-    bool init(GJSearchObject* p0)
-    {
-        if (!LevelBrowserLayer::init(p0)) return false;
-
-        if (Mod::get()->getSettingValue<bool>("fix-joystick-scroll"))
-        {
-            // put joystick controller stuff in correct position
-            auto nodes = this->getChildren();
-            for (int i = 0; i < this->getChildrenCount(); ++i)
-            {
-                auto node = nodes->objectAtIndex(i);
-
-                if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
-                {
-                    // test if it's in the correct position to be the controller buttons
-                    // there may be a better way to test this but not that I know of
-                    if (spriteNode->getPositionX() == 545)
-                    {
-                        // if so then fix it
-                        spriteNode->setPositionY(spriteNode->getPositionY() - 110);
-                        spriteNode->setPositionX(30);
-                    }
-                }
-            }
-        }
-
-        // and obviously remove corners
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-// remove corners and other stuf
-class $modify(LevelSelectLayer)
-{
-    bool init(int p0)
-    {
-        if (!LevelSelectLayer::init(p0)) return false;
-
-        if (Mod::get()->getSettingValue<bool>("remove-level-select-top"))
-        {
-            auto nodes = this->getChildren();
-            for (int i = 0; i < this->getChildrenCount(); ++i)
-            {
-                auto node = nodes->objectAtIndex(i);
-                if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
-                {
-                    bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
-                    if (couldThisBeLevelTopper)
-                        spriteNode->setVisible(false);
-                }
-            }
-        }
-
-        removeCorners(this);
-
-        return true;
-    }
-};
+//#endregion
+#pragma endregion

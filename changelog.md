@@ -1,4 +1,7 @@
 # GDTweaks Changelog
+## 1.4.0
+- Added randomise background, fix settings gamepad
+- Fixed a bunch of other stuff
 ## 1.3.1
 - Android support
 ## 1.3.0
