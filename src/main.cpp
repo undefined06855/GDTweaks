@@ -6,7 +6,6 @@
 #include <Geode/modify/CreatorLayer.hpp>
 #include <Geode/modify/GJGarageLayer.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
-#include <Geode/modify/GJGroundLayer.hpp>
 
 #include <random>
 // setup random stuff
