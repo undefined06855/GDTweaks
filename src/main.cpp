@@ -1,76 +1,54 @@
 // warning: shitty code incoming
 // good luck reading it, i should probably split it up into multiple files
 #include <Geode/Geode.hpp>
-
-// this is only for removing corners on most layers
-// geode should allow having a thing that runs on almost every layer's
-// initialise function
+#include <Geode/modify/CCSprite.hpp>
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/CreatorLayer.hpp>
-#include <Geode/modify/LevelInfoLayer.hpp>
-#include <Geode/modify/GauntletSelectLayer.hpp>
 #include <Geode/modify/GJGarageLayer.hpp>
-#include <Geode/modify/SecretRewardsLayer.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
-#include <Geode/modify/LevelSelectLayer.hpp>
-#include <Geode/modify/LevelSearchLayer.hpp>
-#include <Geode/modify/DailyLevelPage.hpp>
-#include <Geode/modify/RewardsPage.hpp>
-//#include <Geode/modify/RewardUnlockLayer.hpp> // rewardunlocklayer doesn't have an init() yet sadly
+#include <Geode/modify/GJGroundLayer.hpp>
 
 #include <random>
-// setup random stuff for the random background + ground
+// setup random stuff
 std::random_device dev;
 std::mt19937 rng(dev());
 std::uniform_int_distribution<std::mt19937::result_type> distBG(1, 59);
 std::uniform_int_distribution<std::mt19937::result_type> distGround(1, 22);
+std::uniform_int_distribution<std::mt19937::result_type> distGroundLine(1, 3);
 
 using namespace geode::prelude;
 
-static void removeCorners(auto _this)
-{
-    // if remove corners is off, skip everything
-    if (!Mod::get()->getSettingValue<bool>("remove-corners")) return;
+std::unordered_set<std::string> cornerSpriteNames = {
+    "GJ_sideArt_001.png",
+    "dailyLevelCorner_001.png",
+    "gauntletCorner_001.png",
+    "rewardCorner_001.png",
+    "treasureRoomSpiderweb_001.png"
+};
 
-    // crazy code
-    if (auto p = _this->getChildByIDRecursive("left-corner"))           p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("right-corner"))          p->setVisible(false);
-
-    if (auto p = _this->getChildByIDRecursive("top-left-art"))          p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("top-right-art"))         p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("bottom-left-art"))       p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("bottom-right-art"))      p->setVisible(false);
-
-    if (auto p = _this->getChildByIDRecursive("top-left-corner"))       p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("top-right-corner"))      p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("bottom-left-corner"))    p->setVisible(false);
-    if (auto p = _this->getChildByIDRecursive("bottom-right-corner"))   p->setVisible(false);
-
-    // self-explanatory what this does
-    auto nodes = _this->getChildren();
-    for (int i = 0; i < _this->getChildrenCount(); ++i)
+// I may or may not have ~~stolen~~ kindly borrowed some of this from NoControllerGlyphs
+// it's pretty clever tbh
+// "remove-corners" + "remove-level-select-top"
+class $modify(CCSprite) {
+    static void onModify(auto & self)
     {
-        auto node = nodes->objectAtIndex(i);
+        self.setHookPriority("CCSprite::createWithSpriteFrameName", 1000);
+    }
 
-        if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
-        {
-            bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
-            if ((spriteNode->getZOrder() == 1 || spriteNode->getZOrder() == -1) && !couldThisBeLevelTopper)
-            {
-                spriteNode->setVisible(false);
-            }
-        }
-        /*
-        else if (auto spriteNode = typeinfo_cast<CCSpriteWithHue*>(node))
-        {
-            // this is for the corners in RewardUnlockLayer
-            if (spriteNode->getZOrder() == 8)
-                spriteNode->setVisible(false);
-        }
-        */
+    static CCSprite* createWithSpriteFrameName(char const* frameName) {
+        CCSprite* sprite = CCSprite::createWithSpriteFrameName(frameName);
+
+        if (cornerSpriteNames.find(frameName) != cornerSpriteNames.end() && Mod::get()->getSettingValue<bool>("remove-corners"))
+            sprite->setVisible(false); // remove corner
+
+        if (strcmp(frameName, "GJ_topBar_001.png") == 0 && Mod::get()->getSettingValue<bool>("remove-level-select-top"))
+            sprite->setVisible(false); // remove level select topper thingymabob
+
+        return sprite;
     }
 };
 
+// "title-text" + "fix-main-menu-settings-gamepad" + "title-buttons" + "replace-more-games-w-texture" + "randomise-main-menu-bg"
 class $modify(MenuLayer)
 {
     static void onModify(auto & self)
@@ -128,7 +106,10 @@ class $modify(MenuLayer)
             // replace more games button with texture selector
             // alright so I know that this is probably definitely bad practice to use objectAtIndex but
             // it's the only way to get this afaik and to be honest what other mods actually use the right side menu?
-            auto obj = this->getChildByIDRecursive("right-side-menu")->getChildren()->objectAtIndex(1);
+            // ok so basically there is a mod that uses the right side menu
+            // and hopefully that's going to be the only one because I am NOT remaking these magic numbers again
+            auto rsm = this->getChildByIDRecursive("right-side-menu");
+            auto obj = rsm->getChildren()->objectAtIndex(rsm->getChildrenCount() == 2 ? 1 : 2); // 1 is normal, 2 is modified
             auto moregames = this->getChildByIDRecursive("more-games-menu");
 
             if (auto texSelector = typeinfo_cast<CCMenuItemSpriteExtra*>(obj))
@@ -136,7 +117,19 @@ class $modify(MenuLayer)
                 moregames->setVisible(false);
 
                 texSelector->setPositionX(26.25);
-                texSelector->setPositionY(-49.5);
+                // wow more magic numbers
+                if (rsm->getChildrenCount() == 2)
+                {
+                    // normal
+                    texSelector->setPositionY(-49.5);
+                }
+                else
+                {
+                    // modified
+                    texSelector->setPositionY(-58.5);
+                    rsm->setPositionY(189.25);
+                }
+                
             }
         }
         
@@ -158,56 +151,12 @@ class $modify(MenuLayer)
                     tex->setTexture(newTexture->getTexture());
                 }
 
-                // alright so I would implement ground stuff
-                // except some grounds need 2 layers
-                // and i cant create a second layer since it wont move and stuff
-                /*
                 if (auto groundLayer = typeinfo_cast<GJGroundLayer*>(mainMenuBG->getChildren()->objectAtIndex(1)))
                 {
-                    std::string rand = std::to_string(distGround(rng));
-                    if (rand.length() == 1)
-                        rand = "0" + rand;
-                    std::string string = "groundSquare_" + rand + "_001-uhd.png";
-                    std::string string2 = "groundSquare_" + rand + "_2_001-uhd.png";
+                    int rand = distGround(rng);
+                    int randL = distGroundLine(rng);
 
-                    if (auto batchNode = typeinfo_cast<CCSpriteBatchNode*>(groundLayer->getChildren()->objectAtIndex(3)))
-                    {
-                        auto newTexture = CCSprite::create(string.c_str());
-                        batchNode->setTexture(newTexture->getTexture());
-                    }
-
-                    auto newTexture = CCSprite::create(string2.c_str());
-                    try
-                    {
-                        if (auto batchNode = typeinfo_cast<CCSpriteBatchNode*>(groundLayer->getChildren()->objectAtIndex(4)))
-                        {
-                            batchNode->setTexture(newTexture->getTexture());
-                        }
-                    }
-                    catch(std::exception& e)
-                    {
-                        // doenst exist
-                        auto batchNode2 = CCSpriteBatchNode::createWithTexture(newTexture->getTexture());
-                        groundLayer->addChild(batchNode2);
-                    }
-                }
-                */
-            }
-        }
-
-        if (Mod::get()->getSettingValue<bool>("remove-main-menu-ground"))
-        {
-            if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
-            {
-                auto nodes = mainMenuBG->getChildren();
-                for (int i = 1; i < mainMenuBG->getChildrenCount(); i++)
-                {
-                    auto node = nodes->objectAtIndex(i);
-                    if (auto n = typeinfo_cast<GJGroundLayer*>(node)) n->setVisible(false);
-                    if (auto n = typeinfo_cast<CCMotionStreak*>(node)) n->setVisible(false);
-                    if (auto n = typeinfo_cast<HardStreak*>(node)) n->setVisible(false);
-                    if (auto n = typeinfo_cast<PlayerObject*>(node)) n->setVisible(false);
-                    if (auto n = typeinfo_cast<CCParticleSystemQuad*>(node)) n->setVisible(false);
+                    groundLayer = GJGroundLayer::create(rand, randL);
                 }
             }
         }
@@ -225,6 +174,7 @@ class $modify(MenuLayer)
     }
 };
 
+// "map-packs" + "move-betterinfo"
 class $modify(CreatorLayer)
 {
     static void onModify(auto & self)
@@ -240,13 +190,14 @@ class $modify(CreatorLayer)
         if (Mod::get()->getSettingValue<bool>("map-packs"))
         {
             // remove map packs
-            this->getChildByIDRecursive("map-packs-button")->setVisible(false);
+            auto mpb = this->getChildByIDRecursive("map-packs-button");
+            mpb->setVisible(false);
 
             // move the map to where map packs used to be
-            this->getChildByIDRecursive("map-button")->setPositionX(314.6);
-            this->getChildByIDRecursive("map-button")->setPositionY(65.4);
+            this->getChildByIDRecursive("map-button")->setPosition(mpb->getPosition());
 
             // then shift all the rest over
+            // somehow these magic numbers work fine on every aspect ratio I've tested (4:3 (actually 3:2 but whatever), 16:9 and 21:9 (actually 20:9 but ignore my weird aspect ratio issues ok?))
             this->getChildByIDRecursive("daily-button")->setPositionX(79.35);
             this->getChildByIDRecursive("weekly-button")->setPositionX(176.45);
             this->getChildByIDRecursive("event-button")->setPositionX(273.55);
@@ -267,13 +218,11 @@ class $modify(CreatorLayer)
 
         if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu")) biButton->setZOrder(1);
 
-        // then remove the corners
-        removeCorners(this);
-
         return true;
     }
 };
 
+// "garage-bg-remove" + "garage-lock-tap-remove" + 
 class $modify(GJGarageLayer)
 {
     static void onModify(auto & self)
@@ -320,13 +269,11 @@ class $modify(GJGarageLayer)
                 weirdGroundLineThing->setPositionY(197);
         }
 
-        removeCorners(this);
-
         return true;
     }
 };
 
-// remove corners + fix joystick icon pos
+// "fix-joystick-scroll"
 class $modify(LevelBrowserLayer)
 {
     bool init(GJSearchObject * p0)
@@ -355,125 +302,6 @@ class $modify(LevelBrowserLayer)
             }
         }
 
-        // and obviously remove corners
-        removeCorners(this);
-
         return true;
     }
 };
-
-// remove corners and remove the topper thing
-class $modify(LevelSelectLayer)
-{
-    bool init(int p0)
-    {
-        if (!LevelSelectLayer::init(p0)) return false;
-
-        // remove level select topper if that's enabled
-        if (Mod::get()->getSettingValue<bool>("remove-level-select-top"))
-        {
-            auto nodes = this->getChildren();
-            for (int i = 0; i < this->getChildrenCount(); ++i)
-            {
-                auto node = nodes->objectAtIndex(i);
-                if (auto spriteNode = typeinfo_cast<CCSprite*>(node))
-                {
-                    bool couldThisBeLevelTopper = spriteNode->getPositionY() == 321 && spriteNode->getPositionX() == 284.5;
-                    if (couldThisBeLevelTopper)
-                        spriteNode->setVisible(false);
-                }
-            }
-        }
-
-        // and remove corners
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-// --- The rest of the code is just for removing corners from some layers -------------------------------------------------------------
-#pragma region corner stuff (basically just ignore this)
-//#region corner stuff (basically just ignore this)
-
-// remove corners
-class $modify(LevelInfoLayer)
-{
-    bool init(GJGameLevel * p0, bool p1)
-    {
-        if (!LevelInfoLayer::init(p0, p1)) return false;
-
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-// remove corners
-// TODO: enter key runs `LevelSearchLayer::onSearch(nullptr);`
-class $modify(LevelSearchLayer)
-{
-    bool init(int p0)
-    {
-        if (!LevelSearchLayer::init(p0)) return false;
-
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-// remove corners
-class $modify(GauntletSelectLayer)
-{
-    bool init(int p0)
-    {
-        if (!GauntletSelectLayer::init(p0)) return false;
-
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-// remove corners
-class $modify(SecretRewardsLayer)
-{
-    bool init(bool p0)
-    {
-        if (!SecretRewardsLayer::init(p0)) return false;
-
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-// remove corners
-class $modify(RewardsPage)
-{
-    bool init()
-    {
-        if (!RewardsPage::init()) return false;
-
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-// remove corners
-class $modify(DailyLevelPage)
-{
-    bool init(GJTimedLevelType p0)
-    {
-        if (!DailyLevelPage::init(p0)) return false;
-
-        removeCorners(this);
-
-        return true;
-    }
-};
-
-//#endregion
-#pragma endregion

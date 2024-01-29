@@ -1,10 +1,9 @@
 {
 	"geode": "2.0.0",
 	"gd": {
-		"win": "2.204",
-		"android": "2.205"
+		"win": "2.204"
 	},
-	"version": "v1.4.0",
+	"version": "v1.5.0",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -103,16 +102,10 @@
 			"default": true
 		},
 		"randomise-main-menu-bg": {
-			"name": "Randomise the main menu background",
-			"description": "Whether the background of the main menu gets randomised. This doesn't allow the loading screen to be changed, sadly, and also won't randomise the ground.",
+			"name": "Randomise main menu ground + background",
+			"description": "Whether the background and ground of the main menu gets randomised. This doesn't allow the loading screen to be changed.",
 			"type": "bool",
 			"default": true
-		},
-		"remove-main-menu-ground": {
-			"name": "Remove the main menu ground",
-			"description": "Whether the ground of the main menu gets removed. This also removes the player",
-			"type": "bool",
-			"default": false
 		}
 	}
 }
