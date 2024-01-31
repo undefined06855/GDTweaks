@@ -6,6 +6,7 @@
 #include <Geode/modify/CreatorLayer.hpp>
 #include <Geode/modify/GJGarageLayer.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
+#include <Geode/modify/GJGroundLayer.hpp>
 
 #include <random>
 // setup random stuff
@@ -23,6 +24,30 @@ std::unordered_set<std::string> cornerSpriteNames = {
     "gauntletCorner_001.png",
     "rewardCorner_001.png",
     "treasureRoomSpiderweb_001.png"
+};
+
+bool loadingMainMenu = false;
+
+// "randomise-main-menu-bg" (ground half)
+class $modify(GJGroundLayer)
+{
+    static GJGroundLayer* create(int groundType, int lineType)
+    {
+        if (!loadingMainMenu) return GJGroundLayer::create(groundType, lineType);
+
+        if (Mod::get()->getSettingValue<bool>("randomise-main-menu-bg"))
+        {
+            groundType = distGround(rng);
+            lineType = distGroundLine(rng);
+        }
+
+        auto* groundLayer = GJGroundLayer::create(groundType, lineType);
+
+        if (Mod::get()->getSettingValue<bool>("remove-ground"))
+            groundLayer->setVisible(false);
+
+        return groundLayer;
+    }
 };
 
 // I may or may not have ~~stolen~~ kindly borrowed some of this from NoControllerGlyphs
@@ -47,7 +72,7 @@ class $modify(CCSprite) {
     }
 };
 
-// "title-text" + "fix-main-menu-settings-gamepad" + "title-buttons" + "replace-more-games-w-texture" + "randomise-main-menu-bg"
+// "title-text" + "fix-main-menu-settings-gamepad" + "title-buttons" + "replace-more-games-w-texture" + "randomise-main-menu-bg" (bg half) + "move-player-to-corner"
 class $modify(MenuLayer)
 {
     static void onModify(auto & self)
@@ -58,7 +83,9 @@ class $modify(MenuLayer)
 
     bool init()
     {
+        loadingMainMenu = true;
         if (!MenuLayer::init()) return false;
+        loadingMainMenu = false;
 
         if (Mod::get()->getSettingValue<bool>("title-text"))
         {
@@ -128,12 +155,13 @@ class $modify(MenuLayer)
                     texSelector->setPositionY(-58.5);
                     rsm->setPositionY(189.25);
                 }
-                
+
             }
         }
-        
+
         if (Mod::get()->getSettingValue<bool>("randomise-main-menu-bg"))
         {
+            // this only handles the background, not the ground
             if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
             {
                 if (auto tex = typeinfo_cast<CCTextureProtocol*>(mainMenuBG->getChildren()->objectAtIndex(0))) {
@@ -149,15 +177,34 @@ class $modify(MenuLayer)
                     newTexture->getTexture()->setTexParameters(&tp);
                     tex->setTexture(newTexture->getTexture());
                 }
+            }
+        }
 
-                if (auto groundLayer = typeinfo_cast<GJGroundLayer*>(mainMenuBG->getChildren()->objectAtIndex(1)))
+        if (Mod::get()->getSettingValue<bool>("remove-player"))
+        {
+            if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
+            {
+                auto children = mainMenuBG->getChildren();
+                for (int i = 0; i < mainMenuBG->getChildrenCount(); i++)
                 {
-                    int rand = distGround(rng);
-                    int randL = distGroundLine(rng);
-
-                    groundLayer = GJGroundLayer::create(rand, randL);
+                    if (auto node = typeinfo_cast<HardStreak*>          (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
+                    if (auto node = typeinfo_cast<CCMotionStreak*>      (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
+                    if (auto node = typeinfo_cast<CCParticleSystemQuad*>(mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
+                    if (auto node = typeinfo_cast<PlayerObject*>        (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false);  continue; }
                 }
             }
+        }
+
+        if (Mod::get()->getSettingValue<bool>("move-player-to-corner"))
+        {
+            if (auto socialMediaMenu = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("social-media-menu")))
+                socialMediaMenu->setVisible(false); // a mod already does this, but have to hide it anyway in case the player doesn't have it
+
+            if (auto profileMenu = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("profile-menu")))
+                profileMenu->setPositionY(profileMenu->getPositionY() - 60);
+
+            if (auto username = typeinfo_cast<CCLabelBMFont*>(this->getChildByIDRecursive("player-username")))
+                username->setPositionY(username->getPositionY() - 60);
         }
 
         return true;
