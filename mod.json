@@ -20,7 +20,7 @@
 		},
 		{
 			"id": "geode.node-ids",
-			"version": ">=v1.1.4",
+			"version": "v1.1.4",
 			"importance": "required"
 		}
 	],
