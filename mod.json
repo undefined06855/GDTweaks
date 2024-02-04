@@ -1,7 +1,7 @@
 {
 	"geode": "2.0.0",
 	"gd": { "win": "2.204" },
-	"version": "v1.6.0",
+	"version": "v1.6.1",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -125,6 +125,15 @@
 		"remove-ground": {
 			"name": "Remove the ground in the main menu",
 			"description": "Whether the ground in the main menu gets removed, like is that really not obvious??",
+			"type": "bool",
+			"default": false
+		},
+
+
+
+		"suppress-warnings": {
+			"name": "Suppress incompatibilty warnings",
+			"description": "This doesn't make GDTweaks magically work with every mod! It just makes it silently fail, instead of showing a warning.",
 			"type": "bool",
 			"default": false
 		}

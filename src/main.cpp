@@ -111,7 +111,7 @@ class $modify(MenuLayer)
             if (auto controllerIcon = typeinfo_cast<CCSprite*>(this->getChildByIDRecursive("settings-gamepad-icon")))
             {
                 // wowee magic numbers
-                // I hope this isnt broken on widescreen
+                // Ic hope this isnt broken on widescreen
                 controllerIcon->setPositionX(255.0f);
             }
             //}
@@ -121,10 +121,10 @@ class $modify(MenuLayer)
         {
             // remove newgrounds button + move geode button to where it used to be
             auto ng = this->getChildByIDRecursive("newgrounds-button");
-            ng->setVisible(false);
             this->getChildByIDRecursive("geode.loader/geode-button")->setPositionX(ng->getPositionX());
+            ng->removeFromParent();
             auto btm = this->getChildByIDRecursive("bottom-menu");
-            btm->setPositionX(btm->getPositionX() + 29); // shift over by 29
+            btm->updateLayout();
         }
 
         if (Mod::get()->getSettingValue<bool>("replace-more-games-w-texture"))
@@ -136,26 +136,24 @@ class $modify(MenuLayer)
             // and hopefully that's going to be the only one because I am NOT remaking these magic numbers again
             auto rsm = this->getChildByIDRecursive("right-side-menu");
             auto obj = rsm->getChildren()->objectAtIndex(rsm->getChildrenCount() == 2 ? 1 : 2); // 1 is normal, 2 is modified
-            auto moregames = this->getChildByIDRecursive("more-games-menu");
+            auto mgm = this->getChildByIDRecursive("more-games-menu");
+            auto mgb = this->getChildByIDRecursive("more-games-button");
 
             if (auto texSelector = typeinfo_cast<CCMenuItemSpriteExtra*>(obj))
             {
-                moregames->setVisible(false);
+                // remove texture selector from right side menu
+                texSelector->removeFromParent();
 
-                texSelector->setPositionX(26.25);
-                // wow more magic numbers
-                if (rsm->getChildrenCount() == 2)
-                {
-                    // normal
-                    texSelector->setPositionY(-49.5);
-                }
-                else
-                {
-                    // modified
-                    texSelector->setPositionY(-58.5);
-                    rsm->setPositionY(189.25);
-                }
+                // remove more games button + add texture selector to the same menu
+                mgb->removeFromParent();
+                mgm->addChild(texSelector);
 
+                // refresh everything
+                rsm->updateLayout();
+                mgm->updateLayout();
+
+                // and move the menu to the left a smidge
+                mgm->setPositionX(mgm->getPositionX() - 16);
             }
         }
 
@@ -233,9 +231,48 @@ class $modify(CreatorLayer)
     {
         if (!CreatorLayer::init()) return false;
 
+        auto skipOverMapPackRemoval = [](std::string labelName, cocos2d::CCNode* _this)
+        {
+            std::cout << (std::string)"skip map pack removal; couldn't find " + labelName << "\n";
+
+            if (Mod::get()->getSettingValue<bool>("suppress-warnings")) return;
+
+            auto alert = FLAlertLayer::create(
+                "Notice (from GDTweaks)",
+                "GDTweaks couldn't remove the map packs button because of a mod incompatibility, (" + labelName + " was not found). You can suppress these dialogs in the GDTweaks settings.",
+                "OK"
+            );
+            alert->m_scene = _this;
+            alert->show();
+        };
+
         if (Mod::get()->getSettingValue<bool>("map-packs"))
         {
             // remove map packs
+
+            // TODO: see if this works etc
+
+            std::string buttonChecks[6] = {
+                "daily-button",
+                "weekly-button",
+                "event-button",
+                "gauntlets-button",
+                "map-button",
+                "map-packs-button"
+            };
+
+            // firstly we have to check every single thing is here - if not then a mod
+            // will have incompatibilities
+            for (int i = 0; i < 6; i++)
+            {
+                std::string labelName = buttonChecks[i];
+                if (!this->getChildByIDRecursive(labelName))
+                {
+                    skipOverMapPackRemoval(labelName, this);
+                    goto endOfMapPacks;
+                }
+            }
+
             auto mpb = this->getChildByIDRecursive("map-packs-button");
             mpb->setVisible(false);
 
@@ -250,6 +287,8 @@ class $modify(CreatorLayer)
             this->getChildByIDRecursive("gauntlets-button")->setPositionX(370.65);
         }
 
+
+endOfMapPacks:
         if (Mod::get()->getSettingValue<bool>("move-betterinfo"))
         {
             // move betterinfo button to bottom left (if it exists)
