@@ -26,6 +26,21 @@ std::unordered_set<std::string> cornerSpriteNames = {
     "treasureRoomSpiderweb_001.png"
 };
 
+void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
+{
+    std::cout << "couldn't find " + labelName + " for " + taskName << std::endl;
+
+    if (Mod::get()->getSettingValue<bool>("suppress-warnings")) return;
+
+    auto alert = FLAlertLayer::create(
+        "Notice (from GDTweaks)",
+        "GDTweaks couldn't "+ taskName +" because of a mod incompatibility, (" + labelName + " was not found). You can suppress these dialogs in the GDTweaks settings.",
+        "OK"
+    );
+    alert->m_scene = _this;
+    alert->show();
+}
+
 bool loadingMainMenu = false;
 
 // "randomise-main-menu-bg" (ground half)
@@ -92,6 +107,14 @@ class $modify(MenuLayer)
             // make title funny
             auto t = this->getChildByIDRecursive("main-title");
 
+            // ok but who in their right mind would remove the main menu title
+            // might as well check for it anyway
+            if (!t)
+            {
+                alert("main-title", "skew the title text", this);
+                goto endOfTitleThing;
+            }
+
             t->setScale(1.025);
             t->setSkewX(52);
             t->setSkewY(10);
@@ -100,13 +123,19 @@ class $modify(MenuLayer)
             t->setPositionY(258);
 
             // put bg behind title
+            if (!this->getChildByIDRecursive("main-menu-bg"))
+            {
+                alert("main-menu-bg", "skew the title text", this);
+                goto endOfTitleThing;
+            }
+
             this->getChildByIDRecursive("main-menu-bg")->setZOrder(-2);
         }
 
+    endOfTitleThing:
+
         if (Mod::get()->getSettingValue<bool>("fix-main-menu-settings-gamepad"))
         {
-            //if (auto settingsButton = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("settings-button")))
-            //{
             // this is added by geode, so should exist in theory, but might as well check for nullptr anyway
             if (auto controllerIcon = typeinfo_cast<CCSprite*>(this->getChildByIDRecursive("settings-gamepad-icon")))
             {
@@ -114,18 +143,29 @@ class $modify(MenuLayer)
                 // Ic hope this isnt broken on widescreen
                 controllerIcon->setPositionX(255.0f);
             }
-            //}
         }
 
         if (Mod::get()->getSettingValue<bool>("title-buttons"))
         {
             // remove newgrounds button + move geode button to where it used to be
             auto ng = this->getChildByIDRecursive("newgrounds-button");
+            if (!ng)
+            {
+                alert("newgrounds-button", "move geode button to where the newgrounds button was", this);
+                goto endOfTitleButtonThing;
+            }
             this->getChildByIDRecursive("geode.loader/geode-button")->setPositionX(ng->getPositionX());
             ng->removeFromParent();
             auto btm = this->getChildByIDRecursive("bottom-menu");
+            if (!btm)
+            {
+                alert("bottom-menu", "move geode button to where the newgrounds button was", this);
+                goto endOfTitleButtonThing;
+            }
             btm->updateLayout();
         }
+
+    endOfTitleButtonThing:
 
         if (Mod::get()->getSettingValue<bool>("replace-more-games-w-texture"))
         {
@@ -136,8 +176,20 @@ class $modify(MenuLayer)
             // and hopefully that's going to be the only one because I am NOT remaking these magic numbers again
             auto rsm = this->getChildByIDRecursive("right-side-menu");
             auto obj = rsm->getChildren()->objectAtIndex(rsm->getChildrenCount() == 2 ? 1 : 2); // 1 is normal, 2 is modified
-            auto mgm = this->getChildByIDRecursive("more-games-menu");
+            auto mgm = this->getChildByIDRecursive("more-games-menu"); // this might have been deleted
             auto mgb = this->getChildByIDRecursive("more-games-button");
+
+            if (!mgb || !mgm || !rsm || !obj)
+            {
+                std::string label = "";
+                if (!mgb) label = "more-games-button";
+                else if (!mgm) label = "more-games-menu";
+                else if (!rsm) label = "right-side-menu";
+                else if (!obj) label = "(the texture selector menuitem)";
+
+                alert("more-games-button", "replace the more games button with the texture selector", this);
+                goto endOfReplaceMoreGamesWithTexture;
+            }
 
             if (auto texSelector = typeinfo_cast<CCMenuItemSpriteExtra*>(obj))
             {
@@ -157,6 +209,8 @@ class $modify(MenuLayer)
             }
         }
 
+    endOfReplaceMoreGamesWithTexture:
+
         if (Mod::get()->getSettingValue<bool>("randomise-main-menu-bg"))
         {
             // this only handles the background, not the ground
@@ -175,8 +229,20 @@ class $modify(MenuLayer)
                     newTexture->getTexture()->setTexParameters(&tp);
                     tex->setTexture(newTexture->getTexture());
                 }
+                else
+                {
+                    alert("(first child of) main-menu-bg", "randomise the main menu background", this);
+                    goto endOfRandomiseMainMenuBG;
+                }
+            }
+            else
+            {
+                alert("main-menu-bg", "randomise the main menu background", this);
+                goto endOfRandomiseMainMenuBG;
             }
         }
+
+    endOfRandomiseMainMenuBG:
 
         if (Mod::get()->getSettingValue<bool>("remove-player"))
         {
@@ -191,7 +257,14 @@ class $modify(MenuLayer)
                     if (auto node = typeinfo_cast<PlayerObject*>        (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false);  continue; }
                 }
             }
+            else
+            {
+                alert("main-menu-bg", "remove the player", this);
+                goto endOfRemovePlayer;
+            }
         }
+
+    endOfRemovePlayer:
 
         if (Mod::get()->getSettingValue<bool>("move-player-to-corner"))
         {
@@ -231,21 +304,6 @@ class $modify(CreatorLayer)
     {
         if (!CreatorLayer::init()) return false;
 
-        auto skipOverMapPackRemoval = [](std::string labelName, cocos2d::CCNode* _this)
-        {
-            std::cout << (std::string)"skip map pack removal; couldn't find " + labelName << "\n";
-
-            if (Mod::get()->getSettingValue<bool>("suppress-warnings")) return;
-
-            auto alert = FLAlertLayer::create(
-                "Notice (from GDTweaks)",
-                "GDTweaks couldn't remove the map packs button because of a mod incompatibility, (" + labelName + " was not found). You can suppress these dialogs in the GDTweaks settings.",
-                "OK"
-            );
-            alert->m_scene = _this;
-            alert->show();
-        };
-
         if (Mod::get()->getSettingValue<bool>("map-packs"))
         {
             // remove map packs
@@ -268,11 +326,12 @@ class $modify(CreatorLayer)
                 std::string labelName = buttonChecks[i];
                 if (!this->getChildByIDRecursive(labelName))
                 {
-                    skipOverMapPackRemoval(labelName, this);
+                    alert(labelName, "remove the map pack button", this);
                     goto endOfMapPacks;
                 }
             }
 
+            // guaranteed to exist bc of the check above
             auto mpb = this->getChildByIDRecursive("map-packs-button");
             mpb->setVisible(false);
 
@@ -288,7 +347,7 @@ class $modify(CreatorLayer)
         }
 
 
-endOfMapPacks:
+    endOfMapPacks:
         if (Mod::get()->getSettingValue<bool>("move-betterinfo"))
         {
             // move betterinfo button to bottom left (if it exists)
@@ -299,8 +358,16 @@ endOfMapPacks:
                 biButton->setPositionX(28);
                 biButton->setPositionY(28);
             }
+            else
+            {
+                alert("cvolton.betterinfo/center-right-menu", "move the betterinfo button to the corner", this);
+                goto endOfBetterInfo; // not needed but might as well in case expansion is needed
+            }
         }
 
+    endOfBetterInfo:
+
+        // this is just a nice thing to do
         if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu")) biButton->setZOrder(1);
 
         return true;
@@ -322,37 +389,108 @@ class $modify(GJGarageLayer)
         if (Mod::get()->getSettingValue<bool>("garage-bg-remove"))
         {
             // remove the background from the icon kit
-            if (auto bg = typeinfo_cast<CCScale9Sprite*>(this->getChildren()->objectAtIndex(8)))
-                bg->setVisible(false);
+            for (int i = 0; i < this->getChildrenCount(); i++)
+            {
+                if (auto bg = typeinfo_cast<CCScale9Sprite*>(this->getChildren()->objectAtIndex(i)))
+                {
+                    bg->setVisible(false);
+                    goto endOfGarageBGRemove;
+                }
+            }
+
+            std::cout << "couldnt find ccscale9sprite for icon kit" << std::endl;
+            if (!Mod::get()->getSettingValue<bool>("suppress-warnings"))
+            {
+                auto alert = FLAlertLayer::create(
+                    "Notice (from GDTweaks)",
+                    "GDTweaks couldn't find the icon kit background because of a mod incompatibility. You can suppress these dialogs in the GDTweaks settings.",
+                    "OK"
+                );
+                alert->m_scene = this;
+                alert->show();
+            }
         }
+
+    endOfGarageBGRemove:
 
         if (Mod::get()->getSettingValue<bool>("garage-lock-tap-remove"))
         {
             // remove tap for more info lock
-            if (auto lock = typeinfo_cast<CCSprite*>(this->getChildren()->objectAtIndex(9)))
-                lock->setVisible(false);
+            auto lockSprite = CCSprite::createWithSpriteFrameName("GJ_unlockTxt_001.png");
+            auto lineSprite = CCSprite::createWithSpriteFrameName("floorLine_001.png");
 
-            // shuffle everything around
-            // my excuse for the overuse of objectAtIndex is that literally nobody edits the icon kit
-            // also how else am I meant to grab them (without looping through every node) there's no node ids
-            // also the option literally says there may be a lot of mod incompatiblities using this
+            bool foundLock = false;
+            bool foundPlayer = false;
+            bool foundWeirdGroundLineThing = false;
+            bool foundIconTypeSelector = false;
 
-            if (auto playerIconPreview = typeinfo_cast<SimplePlayer*>(this->getChildren()->objectAtIndex(7)))
-                playerIconPreview->setPositionY(222);
-
-            if (auto iconTypeSelector = typeinfo_cast<CCMenu*>(this->getChildren()->objectAtIndex(10)))
+            for (int i = 0; i < this->getChildrenCount(); i++)
             {
-                iconTypeSelector->setPositionY(171);
-                // for whatever reason the left and right arrows are in the icon type selector thingymabob
-                if (auto leftArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(11)))
-                    leftArrow->setPositionY(-75);
-                if (auto rightArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(12)))
-                    rightArrow->setPositionY(-75);
+                auto obj = this->getChildren()->objectAtIndex(i);
+
+                // brah why cant i just use && :despair:
+                // python ass syntax my god
+                if (!foundLock)
+                    if (auto lock = typeinfo_cast<CCSprite*>(obj))
+                        if (lock == lockSprite)
+                        {
+                            lock->setVisible(false);
+                            foundLock = true;
+                        }
+
+                if (!foundPlayer)
+                    if (auto playerIconPreview = typeinfo_cast<SimplePlayer*>(obj))
+                    {
+                        playerIconPreview->setPositionY(22);
+                        foundPlayer = true;
+                    }
+
+                if (!foundIconTypeSelector)
+                    if (auto iconTypeSelector = typeinfo_cast<CCMenu*>(obj))
+                    {
+                        iconTypeSelector->setPositionY(171);
+                        // for whatever reason the left and right arrows are in the icon type selector thingymabob
+                        if (auto leftArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(11)))
+                            leftArrow->setPositionY(-75);
+                        if (auto rightArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(12)))
+                            rightArrow->setPositionY(-75);
+                    }
+
+                if (!foundWeirdGroundLineThing)
+                    if (auto weirdGroundLineThing = typeinfo_cast<CCSprite*>(obj))
+                        if (weirdGroundLineThing == lineSprite)
+                        {
+                            weirdGroundLineThing->setPositionY(197);
+                            foundWeirdGroundLineThing = true;
+                        }
             }
 
-            if (auto weirdGroundLineThing = typeinfo_cast<CCSprite*>(this->getChildren()->objectAtIndex(6)))
-                weirdGroundLineThing->setPositionY(197);
+            if (!foundLock)
+            {
+                alert("the lock", "removing the tap for more info lock", this);
+                goto endOfGarageLockTapRemove;
+            }
+
+            if (!foundPlayer)
+            {
+                alert("the player sprite", "removing the tap for more info lock", this);
+                goto endOfGarageLockTapRemove;
+            }
+
+            if (!foundIconTypeSelector)
+            {
+                alert("the icon type selector", "removing the tap for more info lock", this);
+                goto endOfGarageLockTapRemove;
+            }
+
+            if (!foundWeirdGroundLineThing)
+            {
+                alert("the ground line thingymabob", "removing the tap for more info lock", this);
+                goto endOfGarageLockTapRemove;
+            }
         }
+
+    endOfGarageLockTapRemove:
 
         return true;
     }
