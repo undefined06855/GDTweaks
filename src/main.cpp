@@ -169,6 +169,8 @@ class $modify(MenuLayer)
 
         if (Mod::get()->getSettingValue<bool>("replace-more-games-w-texture"))
         {
+            if (!Loader::get()->isModLoaded("geode.texture-loader")) goto endOfReplaceMoreGamesWithTexture;
+
             // replace more games button with texture selector
             // alright so I know that this is probably definitely bad practice to use objectAtIndex but
             // it's the only way to get this afaik and to be honest what other mods actually use the right side menu?
@@ -187,7 +189,7 @@ class $modify(MenuLayer)
                 else if (!rsm) label = "right-side-menu";
                 else if (!obj) label = "(the texture selector menuitem)";
 
-                alert("more-games-button", "replace the more games button with the texture selector", this);
+                alert(label, "replace the more games button with the texture selector", this);
                 goto endOfReplaceMoreGamesWithTexture;
             }
 
@@ -254,7 +256,7 @@ class $modify(MenuLayer)
                     if (auto node = typeinfo_cast<HardStreak*>          (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
                     if (auto node = typeinfo_cast<CCMotionStreak*>      (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
                     if (auto node = typeinfo_cast<CCParticleSystemQuad*>(mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
-                    if (auto node = typeinfo_cast<PlayerObject*>        (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false);  continue; }
+                    if (auto node = typeinfo_cast<PlayerObject*>        (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
                 }
             }
             else
@@ -350,6 +352,8 @@ class $modify(CreatorLayer)
     endOfMapPacks:
         if (Mod::get()->getSettingValue<bool>("move-betterinfo"))
         {
+            if (!Loader::get()->isModLoaded("cvolton.betterinfo")) goto endOfBetterInfo;
+
             // move betterinfo button to bottom left (if it exists)
             // for some reason setPosition doesn't seem to work for me
             // so two setPositionX/Ys will have to do
@@ -416,8 +420,10 @@ class $modify(GJGarageLayer)
         if (Mod::get()->getSettingValue<bool>("garage-lock-tap-remove"))
         {
             // remove tap for more info lock
-            auto lockSprite = CCSprite::createWithSpriteFrameName("GJ_unlockTxt_001.png");
-            auto lineSprite = CCSprite::createWithSpriteFrameName("floorLine_001.png");
+
+            // it's easier to use the content size here
+            auto lockSpriteContentSize = CCSprite::createWithSpriteFrameName("GJ_unlockTxt_001.png")->getContentSize();
+            auto lineSpriteContentSize = CCSprite::createWithSpriteFrameName("floorLine_001.png")->getContentSize();
 
             bool foundLock = false;
             bool foundPlayer = false;
@@ -426,14 +432,16 @@ class $modify(GJGarageLayer)
 
             for (int i = 0; i < this->getChildrenCount(); i++)
             {
+                //std::cout << i << std::endl;
                 auto obj = this->getChildren()->objectAtIndex(i);
 
                 // brah why cant i just use && :despair:
                 // python ass syntax my god
                 if (!foundLock)
                     if (auto lock = typeinfo_cast<CCSprite*>(obj))
-                        if (lock == lockSprite)
+                        if (lock->getContentSize()  == lockSpriteContentSize)
                         {
+                            //std::cout << "found lock" << std::endl;
                             lock->setVisible(false);
                             foundLock = true;
                         }
@@ -441,25 +449,34 @@ class $modify(GJGarageLayer)
                 if (!foundPlayer)
                     if (auto playerIconPreview = typeinfo_cast<SimplePlayer*>(obj))
                     {
-                        playerIconPreview->setPositionY(22);
+                        //std::cout << "found piconp" << std::endl;
+
+                        playerIconPreview->setPositionY(222);
                         foundPlayer = true;
                     }
 
                 if (!foundIconTypeSelector)
                     if (auto iconTypeSelector = typeinfo_cast<CCMenu*>(obj))
-                    {
-                        iconTypeSelector->setPositionY(171);
-                        // for whatever reason the left and right arrows are in the icon type selector thingymabob
-                        if (auto leftArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(11)))
-                            leftArrow->setPositionY(-75);
-                        if (auto rightArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(12)))
-                            rightArrow->setPositionY(-75);
-                    }
+                        // before this check it could potentially be the only other ccmenu in garagelayer
+                        if (iconTypeSelector->getChildrenCount() >= 13)
+                        {
+                            //std::cout << "found itypeselec" << std::endl;
+                            foundIconTypeSelector = true;
+
+                            iconTypeSelector->setPositionY(171);
+                            // for whatever reason the left and right arrows are in the icon type selector thingymabob
+                            if (auto leftArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(11)))
+                                leftArrow->setPositionY(-75);
+                            if (auto rightArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(12)))
+                                rightArrow->setPositionY(-75);
+                        }
 
                 if (!foundWeirdGroundLineThing)
                     if (auto weirdGroundLineThing = typeinfo_cast<CCSprite*>(obj))
-                        if (weirdGroundLineThing == lineSprite)
+                        if (weirdGroundLineThing->getContentSize() == lineSpriteContentSize)
                         {
+                            //std::cout << "found line" << std::endl;
+
                             weirdGroundLineThing->setPositionY(197);
                             foundWeirdGroundLineThing = true;
                         }

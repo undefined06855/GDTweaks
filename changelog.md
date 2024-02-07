@@ -1,4 +1,6 @@
 # GDTweaks Changelog
+## 1.6.2
+- Fixed a bunch of incompatibilities and added a warning
 ## 1.6.1
 - Added warning when an incompatibilty is detected
 ## 1.6.0

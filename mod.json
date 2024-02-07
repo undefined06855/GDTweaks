@@ -1,7 +1,7 @@
 {
 	"geode": "2.0.0",
 	"gd": { "win": "2.204" },
-	"version": "v1.6.1",
+	"version": "v1.6.2",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -94,7 +94,7 @@
 		},
 		"garage-lock-tap-remove": {
 			"name": "Remove \"Tap lock for more info!\" message",
-			"description": "There's no way you actually needed to know what this does. WARNING: this may be wildly incompatible with other mods that modify the icon kit.",
+			"description": "There's no way you actually needed to know what this does.",
 			"type": "bool",
 			"default": true
 		},
