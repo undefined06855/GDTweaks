@@ -1,7 +1,7 @@
 {
 	"geode": "2.0.0",
 	"gd": { "win": "2.204" },
-	"version": "v1.6.2",
+	"version": "v1.7.0",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -110,6 +110,30 @@
 			"type": "bool",
 			"default": true
 		},
+		"force-bg": {
+			"name": "Force background ID",
+			"description": "Whether the background should be forced to be a specific one. Set to 0 to disable.",
+			"type": "int",
+			"default": 0,
+			"min": 0,
+			"max": 55,
+			"control": {
+				"arrows": true,
+				"slider": false
+			}
+		},
+		"force-ground": {
+			"name": "Force ground ID",
+			"description": "Whether the ground should be forced to be a specific one. Set to 0 to disable.",
+			"type": "int",
+			"default": 0,
+			"min": 0,
+			"max": 22,
+			"control": {
+				"arrows": true,
+				"slider": false
+			}
+		},
 		"move-player-to-corner": {
 			"name": "Move account icon to the corner",
 			"description": "Whether your account button is moved into the bottom right corner. This also removes the robtop logo and relevant buttons.",
@@ -128,7 +152,18 @@
 			"type": "bool",
 			"default": false
 		},
-
+		"align-daily": {
+			"name": "Align the daily chest",
+			"description": "This realigns the daily chest because it isnt in the original game for some reason",
+			"type": "bool",
+			"default": true
+		},
+		"remove-exit-button": {
+			"name": "Remove exit button",
+			"description": "Removes the exit button from the main menu, what did you expect?",
+			"type": "bool",
+			"default": false
+		},
 
 
 		"suppress-warnings": {

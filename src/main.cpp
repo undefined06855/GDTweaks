@@ -50,13 +50,25 @@ class $modify(GJGroundLayer)
     {
         if (!loadingMainMenu) return GJGroundLayer::create(groundType, lineType);
 
-        if (Mod::get()->getSettingValue<bool>("randomise-main-menu-bg"))
+        int64_t ground = Mod::get()->getSettingValue<int64_t>("force-ground");
+
+        //std::cout << ground << std::endl;
+
+        if (ground != 0)
+        {
+            //std::cout << "yah" << std::endl;
+            groundType = std::stoi(std::to_string(ground));
+            //std::cout << "did that" << std::endl;
+        }
+        else if (Mod::get()->getSettingValue<bool>("randomise-main-menu-bg"))
         {
             groundType = distGround(rng);
             lineType = distGroundLine(rng);
         }
 
+        //std::cout << "abt to create" << std::endl;
         auto* groundLayer = GJGroundLayer::create(groundType, lineType);
+        //std::cout << "created!" << std::endl;
 
         if (Mod::get()->getSettingValue<bool>("remove-ground"))
             groundLayer->setVisible(false);
@@ -133,6 +145,32 @@ class $modify(MenuLayer)
         }
 
     endOfTitleThing:
+
+        if (Mod::get(getSettingValue<bool>("remove-exit-button"))
+        {
+            if (auto exitBtn = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("close-button")))
+            {
+                // would just setVisible(false) BUT then I wouldnt be able to update the layout because I know
+                // that there's mods that update the `close-menu`
+                exitBtn->removeFromParent();
+
+                // speaking of close-menu:
+                if (auto exitMenu = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("close-menu")))
+                    exitMenu->updateLayout();
+                else
+                {
+                    alert("close-menu", "remove the exit button", this);
+                    goto endOfRemoveExitButton;
+                }
+            }
+            else
+            {
+                alert("close-button", "remove the exit button", this);
+                goto endOfRemoveExitButton;
+            }
+        }
+
+    endOfRemoveExitButton:
 
         if (Mod::get()->getSettingValue<bool>("fix-main-menu-settings-gamepad"))
         {
@@ -246,6 +284,37 @@ class $modify(MenuLayer)
 
     endOfRandomiseMainMenuBG:
 
+        int64_t bg = Mod::get()->getSettingValue<int64_t>("force-bg");
+        if (bg != 0)
+        {
+            if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
+            {
+                if (auto tex = typeinfo_cast<CCTextureProtocol*>(mainMenuBG->getChildren()->objectAtIndex(0))) {
+                    std::string bgIndexStr = std::to_string(bg);
+                    if (bgIndexStr.length() == 1)
+                        bgIndexStr = "0" + bgIndexStr;
+                    std::string string = "game_bg_" + bgIndexStr + "_001-uhd.png";
+                    //std::cout << string << std::endl;
+                    auto newTexture = CCSprite::create(string.c_str());
+                    ccTexParams tp = { GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT };
+                    newTexture->getTexture()->setTexParameters(&tp);
+                    tex->setTexture(newTexture->getTexture());
+                }
+                else
+                {
+                    alert("(first child of) main-menu-bg", "force the main menu background to id " + bg, this);
+                    goto endOfForceBGId;
+                }
+            }
+            else
+            {
+                alert("main-menu-bg", "force the main menu background to id " + bg, this);
+                goto endOfForceBGId;
+            }
+        }
+        
+    endOfForceBGId:
+
         if (Mod::get()->getSettingValue<bool>("remove-player"))
         {
             if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
@@ -275,10 +344,35 @@ class $modify(MenuLayer)
 
             if (auto profileMenu = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("profile-menu")))
                 profileMenu->setPositionY(profileMenu->getPositionY() - 60);
+            else
+            {
+                alert("profile-menu", "move the icon to the corner", this);
+                goto endOfMovePlayerToCorner;
+            }
 
             if (auto username = typeinfo_cast<CCLabelBMFont*>(this->getChildByIDRecursive("player-username")))
                 username->setPositionY(username->getPositionY() - 60);
+            else
+            {
+                alert("player-username", "move the icon to the corner", this);
+                goto endOfMovePlayerToCorner;
+            }
         }
+
+    endOfMovePlayerToCorner:
+
+        if (Mod::get()->getSettingValue<bool>("align-daily"))
+        {
+            if (auto rsm = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("right-side-menu")))
+                rsm->setPositionY(rsm->getPositionY() - 10);
+            else
+            {
+                alert("right-side-menu", "align the daily chest", this);
+                goto endOfAlignDaily;
+            }
+        }
+
+    endOfAlignDaily:
 
         return true;
     }
@@ -402,7 +496,7 @@ class $modify(GJGarageLayer)
                 }
             }
 
-            std::cout << "couldnt find ccscale9sprite for icon kit" << std::endl;
+            //std::cout << "couldnt find ccscale9sprite for icon kit" << std::endl;
             if (!Mod::get()->getSettingValue<bool>("suppress-warnings"))
             {
                 auto alert = FLAlertLayer::create(
