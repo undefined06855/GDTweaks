@@ -146,7 +146,7 @@ class $modify(MenuLayer)
 
     endOfTitleThing:
 
-        if (Mod::get(getSettingValue<bool>("remove-exit-button"))
+        if (Mod::get()->getSettingValue<bool>("remove-exit-button"))
         {
             if (auto exitBtn = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("close-button")))
             {
