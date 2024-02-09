@@ -497,16 +497,7 @@ class $modify(GJGarageLayer)
             }
 
             //std::cout << "couldnt find ccscale9sprite for icon kit" << std::endl;
-            if (!Mod::get()->getSettingValue<bool>("suppress-warnings"))
-            {
-                auto alert = FLAlertLayer::create(
-                    "Notice (from GDTweaks)",
-                    "GDTweaks couldn't find the icon kit background because of a mod incompatibility. You can suppress these dialogs in the GDTweaks settings.",
-                    "OK"
-                );
-                alert->m_scene = this;
-                alert->show();
-            }
+            alert("icon kit background", "removing the icon kit background", this);
         }
 
     endOfGarageBGRemove:
@@ -515,88 +506,40 @@ class $modify(GJGarageLayer)
         {
             // remove tap for more info lock
 
-            // it's easier to use the content size here
-            auto lockSpriteContentSize = CCSprite::createWithSpriteFrameName("GJ_unlockTxt_001.png")->getContentSize();
-            auto lineSpriteContentSize = CCSprite::createWithSpriteFrameName("floorLine_001.png")->getContentSize();
+            // lock->setVisible(false);
+            // player icon -> setpositiony 222
+            // icon type selector - > setposition y 171
+            // weird ground line -> psoiton y 197
 
-            bool foundLock = false;
-            bool foundPlayer = false;
-            bool foundWeirdGroundLineThing = false;
-            bool foundIconTypeSelector = false;
-
-            for (int i = 0; i < this->getChildrenCount(); i++)
+            if (auto lock = typeinfo_cast<CCSprite*>(this->getChildByIDRecursive("tap-more-hint")))
+                lock->setVisible(false);
+            else
             {
-                //std::cout << i << std::endl;
-                auto obj = this->getChildren()->objectAtIndex(i);
-
-                // brah why cant i just use && :despair:
-                // python ass syntax my god
-                if (!foundLock)
-                    if (auto lock = typeinfo_cast<CCSprite*>(obj))
-                        if (lock->getContentSize()  == lockSpriteContentSize)
-                        {
-                            //std::cout << "found lock" << std::endl;
-                            lock->setVisible(false);
-                            foundLock = true;
-                        }
-
-                if (!foundPlayer)
-                    if (auto playerIconPreview = typeinfo_cast<SimplePlayer*>(obj))
-                    {
-                        //std::cout << "found piconp" << std::endl;
-
-                        playerIconPreview->setPositionY(222);
-                        foundPlayer = true;
-                    }
-
-                if (!foundIconTypeSelector)
-                    if (auto iconTypeSelector = typeinfo_cast<CCMenu*>(obj))
-                        // before this check it could potentially be the only other ccmenu in garagelayer
-                        if (iconTypeSelector->getChildrenCount() >= 13)
-                        {
-                            //std::cout << "found itypeselec" << std::endl;
-                            foundIconTypeSelector = true;
-
-                            iconTypeSelector->setPositionY(171);
-                            // for whatever reason the left and right arrows are in the icon type selector thingymabob
-                            if (auto leftArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(11)))
-                                leftArrow->setPositionY(-75);
-                            if (auto rightArrow = typeinfo_cast<CCMenuItemSpriteExtra*>(iconTypeSelector->getChildren()->objectAtIndex(12)))
-                                rightArrow->setPositionY(-75);
-                        }
-
-                if (!foundWeirdGroundLineThing)
-                    if (auto weirdGroundLineThing = typeinfo_cast<CCSprite*>(obj))
-                        if (weirdGroundLineThing->getContentSize() == lineSpriteContentSize)
-                        {
-                            //std::cout << "found line" << std::endl;
-
-                            weirdGroundLineThing->setPositionY(197);
-                            foundWeirdGroundLineThing = true;
-                        }
-            }
-
-            if (!foundLock)
-            {
-                alert("the lock", "removing the tap for more info lock", this);
+                alert("tap-more-hint", "removing the tap for more info lock", this);
                 goto endOfGarageLockTapRemove;
             }
 
-            if (!foundPlayer)
+            if (auto player = typeinfo_cast<SimplePlayer*>(this->getChildByIDRecursive("player-icon")))
+                player->setPositionY(222);
+            else
             {
-                alert("the player sprite", "removing the tap for more info lock", this);
+                alert("player-icon", "removing the tap for more info lock", this);
                 goto endOfGarageLockTapRemove;
             }
 
-            if (!foundIconTypeSelector)
+            if (auto iconTypeSelector = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("category-menu")))
+                iconTypeSelector->setPositionY(171);
+            else
             {
-                alert("the icon type selector", "removing the tap for more info lock", this);
+                alert("category-menu", "removing the tap for more info lock", this);
                 goto endOfGarageLockTapRemove;
             }
 
-            if (!foundWeirdGroundLineThing)
+            if (auto line = typeinfo_cast<CCSprite*>(this->getChildByIDRecursive("floor-line")))
+                line->setPositionY(197);
+            else
             {
-                alert("the ground line thingymabob", "removing the tap for more info lock", this);
+                alert("floor-line", "removing the tap for more info lock", this);
                 goto endOfGarageLockTapRemove;
             }
         }
