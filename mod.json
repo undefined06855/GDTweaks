@@ -1,7 +1,7 @@
 {
 	"geode": "2.0.0",
 	"gd": { "win": "2.204" },
-	"version": "v1.7.1",
+	"version": "v1.8.0",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -135,10 +135,16 @@
 			}
 		},
 		"move-player-to-corner": {
-			"name": "Move account icon to the corner",
-			"description": "Whether your account button is moved into the bottom right corner. This also removes the robtop logo and relevant buttons.",
-			"type": "bool",
-			"default": false
+			"name": "Move account icon into a corner",
+			"description": "Whether your account button is moved into the bottom left (1) or bottom right corner (2). 0 is disabled.",
+			"type": "int",
+			"default": 0,
+			"min": 0,
+			"max": 2,
+			"control": {
+				"arrows": true,
+				"slider": true
+			}
 		},
 		"remove-player": {
 			"name": "Remove player in the main menu",
@@ -154,9 +160,15 @@
 		},
 		"align-daily": {
 			"name": "Align the daily chest",
-			"description": "This realigns the daily chest because it isnt in the original game for some reason",
+			"description": "This realigns the daily chest because it isn't normally for some reason.",
 			"type": "bool",
 			"default": true
+		},
+		"move-daily": {
+			"name": "Move the daily chest to the bottom right",
+			"description": "ok but what do you think this setting does? just take a wild guess, what do <cy>you think?</c>",
+			"type": "bool",
+			"default": false
 		},
 		"remove-exit-button": {
 			"name": "Remove exit button",

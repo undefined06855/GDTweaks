@@ -1,4 +1,4 @@
-// warning: shitty code incoming
+﻿// warning: shitty code incoming
 // good luck reading it, i should probably split it up into multiple files
 #include <Geode/Geode.hpp>
 #include <Geode/modify/CCSprite.hpp>
@@ -34,7 +34,7 @@ void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
 
     auto alert = FLAlertLayer::create(
         "Notice (from GDTweaks)",
-        "GDTweaks couldn't "+ taskName +" because of a mod incompatibility, (" + labelName + " was not found). You can suppress these dialogs in the GDTweaks settings.",
+        "GDTweaks couldn't <cy>"+ taskName +"</c> because of a <cr>mod incompatibility</c>, (<cj>" + labelName + "</c> was not found). You can suppress these dialogs in the GDTweaks settings.",
         "OK"
     );
     alert->m_scene = _this;
@@ -337,7 +337,8 @@ class $modify(MenuLayer)
 
     endOfRemovePlayer:
 
-        if (Mod::get()->getSettingValue<bool>("move-player-to-corner"))
+        // bottom left
+        if (Mod::get()->getSettingValue<int64_t>("move-player-to-corner") == 1)
         {
             if (auto socialMediaMenu = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("social-media-menu")))
                 socialMediaMenu->setVisible(false); // a mod already does this, but have to hide it anyway in case the player doesn't have it
@@ -358,6 +359,75 @@ class $modify(MenuLayer)
                 goto endOfMovePlayerToCorner;
             }
         }
+        else if (Mod::get()->getSettingValue<int64_t>("move-player-to-corner") == 2)
+        {
+            // test if it can't move the player to the bottom right corner
+            if (Mod::get()->getSettingValue<bool>("replace-more-games-w-texture"))
+            {
+                if (Mod::get()->getSettingValue<bool>("suppress-warnings")) goto endOfMovePlayerToCorner;
+
+                auto alert = FLAlertLayer::create(
+                    "Notice (from GDTweaks)",
+                    "GDTweaks couldn't <cy>move the player to the bottom right corner</c> because <cj>\"Replace \"More Games\" with texture pack\"</c> is enabled. You can suppress these dialogs in the GDTweaks settings.",
+                    "OK"
+                );
+                alert->m_scene = this;
+                alert->show();
+
+                goto endOfMovePlayerToCorner;
+            }
+
+            // it can! let's do the thing
+
+            auto mgm = this->getChildByIDRecursive("more-games-menu"); // this might have been deleted
+            auto mgb = this->getChildByIDRecursive("more-games-button");
+            auto pfb = this->getChildByIDRecursive("profile-button");
+            auto user = this->getChildByIDRecursive("player-username");
+
+            if (!mgb || !mgm || !pfb || !user)
+            {
+                std::string label = "";
+                if (!mgb) label = "more-games-button";
+                else if (!mgm) label = "more-games-menu";
+                else if (!pfb) label = "profile-button";
+                else if (!user) label = "player-username";
+
+                alert(label, "replace the more games button with the texture selector", this);
+                goto endOfMovePlayerToCorner;
+            }
+
+            if (auto profileButton = typeinfo_cast<CCMenuItemSpriteExtra*>(pfb))
+            {
+                if (auto username = typeinfo_cast<CCLabelBMFont*>(user))
+                {
+                    profileButton->removeFromParent();
+                    username->removeFromParent();
+
+                    // create a ccmenu
+                    auto ccmenu = CCMenu::create();
+                    ccmenu->setLayout(AxisLayout::create());
+                    if (auto rawLayout = ccmenu->getLayout())
+                        if (auto layout = typeinfo_cast<AxisLayout*>(rawLayout))
+                        {
+                            layout->setAxis(Axis::Column);
+                        }
+                    
+                    ccmenu->addChild(username);
+                    ccmenu->addChild(profileButton);
+                    ccmenu->updateLayout();
+                    username->setScale(0.625);
+                    username->setPositionY(username->getPositionY() - 9);
+
+                    // remove more games button
+                    mgb->removeFromParent();
+                    mgm->addChild(ccmenu);
+                    mgm->updateLayout();
+
+                    mgm->setPositionY(mgm->getPositionY() + 15);
+                    mgm->setScale(1.35);
+                }
+            }
+        }
 
     endOfMovePlayerToCorner:
 
@@ -374,6 +444,57 @@ class $modify(MenuLayer)
 
     endOfAlignDaily:
 
+        if (Mod::get()->getSettingValue<bool>("move-daily") && (Mod::get()->getSettingValue<int64_t>("move-player-to-corner") == 2))
+        {
+            auto alert = FLAlertLayer::create(
+                "Notice (from GDTweaks)",
+                "GDTweaks couldn't <cy>move the daily chest</c> because <cj>the account icon is in the same corner</c>. You can suppress these dialogs in the GDTweaks settings.",
+                "OK"
+            );
+            alert->m_scene = this;
+            alert->show();
+
+            goto endOfMoveDaily;
+        }
+        
+        if (Mod::get()->getSettingValue<bool>("move-daily"))
+        {
+            CCMenuItemSpriteExtra* dailyChest = nullptr;
+
+            // move daily chest to bottom right
+            if (auto mgb = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("more-games-button")))
+                mgb->removeFromParent();
+            else
+            {
+                alert("more-games-button", "move the daily chest to the bottom right", this);
+                goto endOfMoveDaily;
+            }
+
+            if (auto _dailyChest = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("daily-chest-button")))
+            {
+                _dailyChest->removeFromParent();
+                dailyChest = _dailyChest;
+            }
+            else
+            {
+                alert("daily-chest-button", "move the daily chest to the bottom right", this);
+                goto endOfMoveDaily;
+            }
+
+            if (auto mgm = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("more-games-menu")))
+            {
+                mgm->addChild(dailyChest);
+                mgm->updateLayout();
+            }
+            else
+            {
+                alert("more-games-menu", "move the daily chest to the bottom right", this);
+                goto endOfMoveDaily;
+            }
+        }
+
+    endOfMoveDaily:
+
         return true;
     }
 
@@ -386,6 +507,7 @@ class $modify(MenuLayer)
         FMODAudioEngine::sharedEngine()->playEffect("fire.ogg"_spr);
     }
 };
+
 
 // "map-packs" + "move-betterinfo"
 class $modify(CreatorLayer)
