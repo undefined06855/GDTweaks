@@ -251,6 +251,7 @@ class $modify(MenuLayer)
 
     endOfReplaceMoreGamesWithTexture:
 
+#ifndef GEODE_IS_ANDROID
         if (Mod::get()->getSettingValue<bool>("randomise-main-menu-bg"))
         {
             // this only handles the background, not the ground
@@ -314,7 +315,7 @@ class $modify(MenuLayer)
         }
         
     endOfForceBGId:
-
+#endif
         if (Mod::get()->getSettingValue<bool>("remove-player"))
         {
             if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
