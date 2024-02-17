@@ -106,13 +106,14 @@
 		},
 		"randomise-main-menu-bg": {
 			"name": "Randomise main menu ground + background",
-			"description": "Whether the background and ground of the main menu gets randomised. This doesn't allow the loading screen to be changed.",
+			"description": "Whether the background and ground of the main menu gets randomised. This doesn't allow the loading screen to be changed. THIS OPTION WILL NOT WORK ON ANDROID!",
 			"type": "bool",
-			"default": true
+			"default": true,
+			"platforms": [ "windows" ]
 		},
 		"force-bg": {
 			"name": "Force background ID",
-			"description": "Whether the background should be forced to be a specific one. Set to 0 to disable.",
+			"description": "Whether the background should be forced to be a specific one. Set to 0 to disable. THIS OPTION WILL NOT WORK ON ANDROID!",
 			"type": "int",
 			"default": 0,
 			"min": 0,
@@ -120,7 +121,8 @@
 			"control": {
 				"arrows": true,
 				"slider": false
-			}
+			},
+			"platforms": [ "windows" ]
 		},
 		"force-ground": {
 			"name": "Force ground ID",
