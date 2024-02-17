@@ -7,6 +7,7 @@
 	"developer": "undefined0",
 	"description": "tweak the geometry",
 	"repository": "https://github.com/undefined06855/GDTweaks",
+	"tags": [ "interface", "enhancement" ],
 	"dependencies": [
 		{
 			"id": "geode.texture-loader",
