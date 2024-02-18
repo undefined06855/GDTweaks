@@ -43,6 +43,7 @@ void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
 
 bool loadingMainMenu = false;
 
+
 // "randomise-main-menu-bg" (ground half)
 class $modify(GJGroundLayer)
 {
