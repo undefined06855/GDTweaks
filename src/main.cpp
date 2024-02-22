@@ -510,13 +510,24 @@ class $modify(MenuLayer)
 };
 
 
-// "map-packs" + "move-betterinfo"
-class $modify(CreatorLayer)
+// "map-packs" + "move-betterinfo" + "map-packs-hof"
+class $modify(MyCreatorLayer, CreatorLayer)
 {
     static void onModify(auto & self)
     {
         // run after betterinfo
         self.setHookPriority("CreatorLayer::init", -100);
+    }
+
+    // definitely not taken from BetterInfo :) (thanks cvolton)
+    void onFame(CCObject* object)
+    {
+        auto searchObject = GJSearchObject::create(SearchType::HallOfFame);
+        auto browserLayer = LevelBrowserLayer::scene(searchObject);
+
+        auto transitionFade = CCTransitionFade::create(0.5, browserLayer);
+
+        CCDirector::sharedDirector()->pushScene(transitionFade);
     }
 
     bool init()
@@ -525,9 +536,20 @@ class $modify(CreatorLayer)
 
         if (Mod::get()->getSettingValue<bool>("map-packs"))
         {
-            // remove map packs
+            if (Mod::get()->getSettingValue<bool>("map-packs-hof"))
+            {
+                if (Mod::get()->getSettingValue<bool>("suppress-warnings")) goto endOfMapPacks;
 
-            // TODO: see if this works etc
+                auto alert = FLAlertLayer::create(
+                    "Notice (from GDTweaks)",
+                    "GDTweaks couldn't <cy>remove the map pack button</c> because <cj>\"Replace \"Map Packs\" with Hall Of Fame\"</c> is enabled. You can suppress these dialogs in the GDTweaks settings.",
+                    "OK"
+                );
+                alert->m_scene = this;
+                alert->show();
+
+                goto endOfMapPacks;
+            }
 
             std::string buttonChecks[6] = {
                 "daily-button",
@@ -552,7 +574,6 @@ class $modify(CreatorLayer)
 
             // guaranteed to exist bc of the check above
             auto mpb = this->getChildByIDRecursive("map-packs-button");
-            mpb->setVisible(false);
 
             // move the map to where map packs used to be
             this->getChildByIDRecursive("map-button")->setPosition(mpb->getPosition());
@@ -563,10 +584,13 @@ class $modify(CreatorLayer)
             this->getChildByIDRecursive("weekly-button")->setPositionX(176.45);
             this->getChildByIDRecursive("event-button")->setPositionX(273.55);
             this->getChildByIDRecursive("gauntlets-button")->setPositionX(370.65);
+
+            // and remove map pack button
+            mpb->removeFromParent();
         }
 
-
     endOfMapPacks:
+
         if (Mod::get()->getSettingValue<bool>("move-betterinfo"))
         {
             if (!Loader::get()->isModLoaded("cvolton.betterinfo")) goto endOfBetterInfo;
@@ -587,6 +611,51 @@ class $modify(CreatorLayer)
         }
 
     endOfBetterInfo:
+
+        if (Mod::get()->getSettingValue<bool>("map-packs-hof"))
+        {
+            auto mpb = this->getChildByIDRecursive("map-packs-button");
+            if (!mpb)
+            {
+                alert("map-packs-button", "replacing the Map Packs button with the Hall Of Fame", this);
+                goto endOfHallOfFame;
+            }
+            mpb->setVisible(false);
+            auto mapSprite = typeinfo_cast<CCSprite*>(mpb->getChildren()->objectAtIndex(0));
+
+            // taken from BetterInfo :) thanks cvolton
+            auto* spr = CCSprite::create("GJ_fameBtn_001.png"_spr);
+            auto fameBtn = CCMenuItemSpriteExtra::create(
+                spr,
+                this,
+                menu_selector(MyCreatorLayer::onFame)
+            );
+            // i could just set it to "fame-button" but im nice :)
+            fameBtn->setID("undefined0.gdtweaks/fame-button");
+
+            auto cbm = this->getChildByIDRecursive("creator-buttons-menu");
+            // this should exist in theory but might as well check
+            if (!cbm)
+            {
+                alert("creator-buttons-menu", "replacing the Map Packs button with the Hall Of Fame", this);
+                goto endOfHallOfFame;
+            }
+
+            // add the fame button
+            cbm->addChild(fameBtn);
+            spr->setScale(0.8); // for some reason it's just so much bigger than everything else without this
+
+            // for some reason i cant get the positioning or anything right so ill just set everything to what
+            // the map packs had it at
+            auto mapSpriteContentSize = mapSprite->getContentSize();
+            mapSpriteContentSize.width = 93.5;
+            spr->setContentSize(mapSpriteContentSize);
+            fameBtn->setContentSize(mpb->getContentSize());
+            spr->setPosition(mapSprite->getPosition());
+            fameBtn->setPosition(mpb->getPosition());
+        }
+
+    endOfHallOfFame:
 
         // this is just a nice thing to do
         if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu")) biButton->setZOrder(1);
