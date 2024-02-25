@@ -18,7 +18,8 @@ std::uniform_int_distribution<std::mt19937::result_type> distBG(1, 59);
 
 using namespace geode::prelude;
 
-void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this) {
+void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
+{
     std::cout << "couldn't find " + labelName + " for " + taskName << std::endl;
 
     if (Mod::get()->getSettingValue<bool>("suppress-warnings")) return;
