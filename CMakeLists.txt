@@ -6,11 +6,14 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(TestMod VERSION 1.0.0)
 
-# Set up the mod binary
-add_library(${PROJECT_NAME} SHARED
+# Save this file every time you add a new file to layers (no need to make any changes to this file) 
+file(GLOB SOURCES
+	src/layers/*.cpp
     src/main.cpp
-    # Add your cpp files here
 )
+
+# Set up the mod binary
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 if (NOT DEFINED ENV{GEODE_SDK})
     message(FATAL_ERROR "Unable to find Geode SDK! Please define GEODE_SDK environment variable to point to Geode")
