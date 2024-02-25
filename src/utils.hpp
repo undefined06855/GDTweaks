@@ -1,4 +1,4 @@
 #pragma once
 
-extern void alert();
+extern void alert(std::string, std::string, cocos2d::CCNode* _this);
 extern bool loadingMainMenu;
