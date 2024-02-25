@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/CCSprite.hpp>
-#include "../alert.hpp"
+#include "../utils.hpp"
 
 using namespace geode::prelude;
 

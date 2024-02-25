@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/LevelBrowserLayer.hpp>
+#include "../utils.hpp"
 
 using namespace geode::prelude;
 

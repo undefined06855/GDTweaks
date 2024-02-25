@@ -1,7 +1,7 @@
 // good luck reading it, i should probably split it up into multiple files
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GJGroundLayer.hpp>
-#include "../alert.hpp"
+#include "../utils.hpp"
 
 #include <random>
 // setup random stuff
