@@ -2,8 +2,6 @@
 #include <Geode/modify/CreatorLayer.hpp>
 #include "../utils.hpp"
 
-#include <Geode/utils/NodeIDs.hpp>
-
 using namespace geode::prelude;
 
 // "map-packs" + "move-betterinfo" + "map-packs-hof"
