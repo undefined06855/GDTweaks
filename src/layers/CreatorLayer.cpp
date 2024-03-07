@@ -2,6 +2,8 @@
 #include <Geode/modify/CreatorLayer.hpp>
 #include "../utils.hpp"
 
+#include <Geode/utils/NodeIDs.hpp>
+
 using namespace geode::prelude;
 
 // "map-packs" + "move-betterinfo" + "map-packs-hof"
@@ -92,14 +94,17 @@ class $modify(MyCreatorLayer, CreatorLayer)
             // move betterinfo button to bottom left (if it exists)
             // for some reason setPosition doesn't seem to work for me
             // so two setPositionX/Ys will have to do
-            if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu"))
+            if (auto biButton = this->getChildByIDRecursive("cvolton.betterinfo/main-button"))
             {
-                biButton->setPositionX(28);
-                biButton->setPositionY(28);
+                auto* bottomLeftMenu = static_cast<CCMenu*>(this->getChildByID("bottom-left-menu"));
+                
+                node_ids::switchToMenu(biButton, bottomLeftMenu);
+                bottomLeftMenu->updateLayout();
+
             }
             else
             {
-                alert("cvolton.betterinfo/center-right-menu", "move the betterinfo button to the corner", this);
+                alert("cvolton.betterinfo/main-button", "move the betterinfo button to the corner", this);
                 goto endOfBetterInfo; // not needed but might as well in case expansion is needed
             }
         }
