@@ -103,7 +103,7 @@ class $modify(MyCreatorLayer, CreatorLayer)
             else
             {
                 alert("cvolton.betterinfo/main-button", "move the betterinfo button to the corner", this);
-                goto endOfBetterInfo; // not needed but might as well in case expansion is needed
+                goto endOfBetterInfo;
             }
         }
 
