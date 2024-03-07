@@ -96,9 +96,9 @@ class $modify(MyCreatorLayer, CreatorLayer)
             {
                 auto* bottomLeftMenu = static_cast<CCMenu*>(this->getChildByID("bottom-left-menu"));
                 
-                node_ids::switchToMenu(biButton, bottomLeftMenu);
+                biButton->removeFromParent();
+                bottomLeftMenu->addChild(biButton);
                 bottomLeftMenu->updateLayout();
-
             }
             else
             {
