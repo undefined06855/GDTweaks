@@ -155,7 +155,7 @@ class $modify(MyCreatorLayer, CreatorLayer)
     endOfHallOfFame:
 
         // this is just a nice thing to do
-        if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu")) biButton->setZOrder(1);
+        if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu")) biButton->setZOrder(5);
 
         return true;
     }
