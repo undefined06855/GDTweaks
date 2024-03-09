@@ -168,12 +168,33 @@ class $modify(MenuLayer)
             {
                 if (auto tex = typeinfo_cast<CCTextureProtocol*>(mainMenuBG->getChildren()->objectAtIndex(0))) {
                     std::string rand = std::to_string(distBG(rng));
+
+                    /*
+                     * 0: auto
+                     * 1: sd
+                     * 2: hd
+                     * 3: uhd
+                     */
+                    int textureQuality = GameManager::sharedState()->m_texQuality;
+                    std::string textureQualityString = "-uhd"; // textureQuality == 0 or 3
+                    // auto uses the size of the window to determine the resolution
+                    // but idc it's always uhd :)
+                    // if someone can figure out how it does it then please submit a pr
+                    // thanks
+
+                    if      (textureQuality == 1) textureQualityString = ""; // "sd" quality doesnt have a suffix
+                    else if (textureQuality == 2) textureQualityString = "-hd";
+
+                    // pad number to be two digits
                     if (rand.length() == 1)
                         rand = "0" + rand;
-                    std::string string = "game_bg_" + rand + "_001-uhd.png";
+                    
+                    std::string string = "game_bg_" + rand + "_001" + textureQualityString + ".png";
+
 
                     // literally had to follow a 10 YEAR OLD STACKOVERFLOW POST for this to work
                     // https://stackoverflow.com/a/21699549
+                    // (and it doesnt even work on android)
                     auto newTexture = CCSprite::create(string.c_str());
                     ccTexParams tp = { GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT };
                     newTexture->getTexture()->setTexParameters(&tp);
@@ -225,6 +246,7 @@ class $modify(MenuLayer)
 
     endOfForceBGId:
 #endif
+
         if (Mod::get()->getSettingValue<bool>("remove-player"))
         {
             if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
