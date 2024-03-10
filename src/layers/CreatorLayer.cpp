@@ -117,15 +117,15 @@ class $modify(MyCreatorLayer, CreatorLayer)
             mpb->setVisible(false);
             auto mapSprite = typeinfo_cast<CCSprite*>(mpb->getChildren()->objectAtIndex(0));
 
-            // taken from BetterInfo :) thanks cvolton
+            // this and the fame browser was taken from BetterInfo :) thanks cvolton
             auto* spr = CCSprite::create("GJ_fameBtn_001.png"_spr);
             auto fameBtn = CCMenuItemSpriteExtra::create(
                 spr,
                 this,
                 menu_selector(MyCreatorLayer::onFame)
             );
-            // i could just set it to "fame-button" but im nice :)
-            fameBtn->setID("undefined0.gdtweaks/fame-button");
+            // i could just set it to "fame-button" but i should probably add _spr
+            fameBtn->setID("fame-button"_spr);
 
             auto cbm = this->getChildByIDRecursive("creator-buttons-menu");
             // this should exist in theory but might as well check
