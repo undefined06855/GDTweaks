@@ -92,15 +92,18 @@ class $modify(MyCreatorLayer, CreatorLayer)
             // move betterinfo button to bottom left (if it exists)
             // for some reason setPosition doesn't seem to work for me
             // so two setPositionX/Ys will have to do
-            if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu"))
+            if (auto biButton = this->getChildByIDRecursive("cvolton.betterinfo/main-button"))
             {
-                biButton->setPositionX(28);
-                biButton->setPositionY(28);
+                auto* bottomLeftMenu = static_cast<CCMenu*>(this->getChildByID("bottom-left-menu"));
+                
+                biButton->removeFromParent();
+                bottomLeftMenu->addChild(biButton);
+                bottomLeftMenu->updateLayout();
             }
             else
             {
-                alert("cvolton.betterinfo/center-right-menu", "move the betterinfo button to the corner", this);
-                goto endOfBetterInfo; // not needed but might as well in case expansion is needed
+                alert("cvolton.betterinfo/main-button", "move the betterinfo button to the corner", this);
+                goto endOfBetterInfo;
             }
         }
 
@@ -152,7 +155,7 @@ class $modify(MyCreatorLayer, CreatorLayer)
     endOfHallOfFame:
 
         // this is just a nice thing to do
-        if (auto biButton = this->getChildByID("cvolton.betterinfo/center-right-menu")) biButton->setZOrder(1);
+        if (auto blm = this->getChildByID("bottom-left-menu")) blm->setZOrder(2);
 
         return true;
     }

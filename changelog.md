@@ -1,15 +1,29 @@
 # GDTweaks Changelog
+## v1.10.0
+- Added setting sections and reorganises all of them
+- Added "Remove orbs label from levels"
+- Made changelog more consistent by making everything past tense
+## v1.9.4
+- Fixed v1.9.3's changelog
+- "Fixed" random background always using uhd
+## v1.9.3
+- Fixed v1.9.1 which I thought I fixed in v1.9.2
+## v1.9.2
+- Fixed incompatibility with "Move BetterInfo button"
+## v1.9.1
+- Fixed potential incompatibilities (see #7)
+- Separated into multiple files (see #5)
 ## v1.9.0
-- Add "Replace Map Packs button with Hall Of Fame" (see issue #4)
+- Added "Replace Map Packs button with Hall Of Fame" (see #4)
 ## 1.8.1
-- Add tags
-- Add android support! (stupid 10 year old stackoverflow post made it not work)
+- Added tags
+- Added android support! (stupid 10 year old stackoverflow post made it not work)
 ## 1.8.0
-- Added "Move daily chest to bottom right" (see issue #3)
+- Added "Move daily chest to bottom right" (see #3)
 - Added the ability to move the profile to the bottom right
 ## 1.7.1
-- Update to Node IDs v1.3.0
-- Fix issues with icon kit
+- Updated to Node IDs v1.3.0
+- Fixed issues with icon kit
 ## 1.7.0
 - Added force background and force ground
 - Added remove exit button
@@ -33,19 +47,18 @@
 - Added randomise background, fix settings gamepad
 - Fixed a bunch of other stuff
 ## 1.3.1
-- Android support
+- Added Android support!
 ## 1.3.0
 - Added More icon kit stuff
 - Fixed a bunch of random stuff (why do I even make these descriptions?)
 ## 1.2.1
 - Changed name to GDTweaks
-- Bump version
 ## 1.2.0
 - Added FIRE IN THE HOLE option
 - Fixed joystick icon overlapping heart icon(?)
 - Removed corners in more places
 ## 1.1.0
-- Replace more games with texture pack option
+- Replaced more games with texture pack option
 - Fixed the buttons at the bottom of the screen on ultrawide (hopefully fixed)
 ## 1.0.0
 - Initial release

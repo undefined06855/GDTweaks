@@ -9,15 +9,20 @@
 #include <Geode/modify/LevelBrowserLayer.hpp>
 #include <Geode/modify/GJGroundLayer.hpp>
 #include <Geode/modify/MenuLayer.hpp>
+#include <Geode/modify/LevelCell.hpp>
+#include <Geode/loader/SettingNode.hpp>
+#include "./SectionSpacer.hpp"
 #include "./utils.hpp"
-
 #include <random>
-// setup random stuff
+using namespace geode::prelude;
+
+// -- stuff needed by other files
+
+// setup random stuff for GJGround and MenuLayer
 std::random_device dev;
 std::mt19937 rng(dev());
 
-using namespace geode::prelude;
-
+// this is needed basically everywhere
 void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
 {
     std::cout << "couldn't find " + labelName + " for " + taskName << std::endl;
@@ -33,4 +38,16 @@ void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
     alert->show();
 }
 
+// this is here because it gets set in MenuLayer and is needed in GJGround
 bool loadingMainMenu = false;
+
+// --
+
+SettingNode* SectionSpacerSetting::createNode(float width) { return SectionSpacerNode::create(this, width); }
+$on_mod(Loaded) {
+    Mod::get()->addCustomSetting<SectionSpacerSetting>("header1", "");
+    Mod::get()->addCustomSetting<SectionSpacerSetting>("header2", "");
+    Mod::get()->addCustomSetting<SectionSpacerSetting>("header3", "");
+    Mod::get()->addCustomSetting<SectionSpacerSetting>("header4", "");
+    Mod::get()->addCustomSetting<SectionSpacerSetting>("header5", "");
+}
