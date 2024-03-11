@@ -1,7 +1,7 @@
 {
 	"geode": "2.0.0",
 	"gd": { "win": "2.204", "android": "2.205" },
-	"version": "v1.10.0",
+	"version": "v1.11.0",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -27,10 +27,8 @@
 	],
 
 	"resources": {
-		"files": [
-			"resources/fire.ogg",
-			"resources/GJ_fameBtn_001.png"
-		]
+		"files": [ "resources/fire.ogg" ],
+		"sprites": [ "resources/fame.png" ]
 	},
 
 	"settings": {
@@ -208,6 +206,12 @@
 		"remove-orbs": {
 			"name": "Remove the orbs label from levels",
 			"description": "Removes the orbs label from level lists (LevelCells). This (obviously) doesn't prevent you getting orbs in a level!",
+			"type": "bool",
+			"default": false
+		},
+		"remove-chains": {
+			"name": "Remove chains from level end screen",
+			"description": "Removes the chains at the top of the level end screen.",
 			"type": "bool",
 			"default": false
 		},

@@ -31,6 +31,24 @@ protected:
         auto menu = CCMenu::create();
         auto label = CCLabelBMFont::create(name.c_str(), "bigFont.fnt");
 
+        // scale lines depending on quality
+        auto quality = GameManager::sharedState()->m_texQuality;
+        auto scaleX = 11;
+        auto scaleY = 0.3;
+
+        // sd
+        if (quality == 1)
+        {
+            scaleX = 3.025;
+            scaleY = 0.075;
+        }
+        // "hd"
+        else if (quality == 2)
+        {
+            scaleX = 6.2;
+            scaleY = 0.175;
+        }
+
         // streakb is the only solid square texture - square02-001 has rounded corners
         auto lineLeft = CCSprite::create("streakb_01_001.png");
         auto lineRight = CCSprite::create("streakb_01_001.png");
@@ -39,14 +57,14 @@ protected:
         label->setPositionX(0);
 
         lineLeft->setPosition(CCPoint{ -115, 0 });
-        lineLeft->setScaleY(0.3);
-        lineLeft->setScaleX(11);
+        lineLeft->setScaleY(scaleY);
+        lineLeft->setScaleX(scaleX);
         lineLeft->setOpacity(111);
         lineLeft->setColor(ccColor3B{ 0, 0, 0 });
 
         lineRight->setPosition(CCPoint{ 115, 0 });
-        lineRight->setScaleY(0.3);
-        lineRight->setScaleX(11);
+        lineRight->setScaleY(scaleY);
+        lineRight->setScaleX(scaleX);
         lineRight->setOpacity(111);
         lineRight->setColor(ccColor3B{ 0, 0, 0 });
 

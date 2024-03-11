@@ -1,4 +1,7 @@
 # GDTweaks Changelog
+## v1.11.0
+- Added "Remove chains from level end screen" (suggested by imtopline)
+- Fixed "Replace Map Packs with hall of fame"
 ## v1.10.0
 - Added setting sections and reorganises all of them
 - Added "Remove orbs label from levels"

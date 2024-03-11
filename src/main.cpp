@@ -49,5 +49,4 @@ $on_mod(Loaded) {
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header2", "");
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header3", "");
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header4", "");
-    Mod::get()->addCustomSetting<SectionSpacerSetting>("header5", "");
 }

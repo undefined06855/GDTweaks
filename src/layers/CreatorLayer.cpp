@@ -121,7 +121,8 @@ class $modify(MyCreatorLayer, CreatorLayer)
             auto mapSprite = typeinfo_cast<CCSprite*>(mpb->getChildren()->objectAtIndex(0));
 
             // this and the fame browser was taken from BetterInfo :) thanks cvolton
-            auto* spr = CCSprite::create("GJ_fameBtn_001.png"_spr);
+            auto* spr = CCSprite::create("fame.png"_spr);
+
             auto fameBtn = CCMenuItemSpriteExtra::create(
                 spr,
                 this,
@@ -151,7 +152,7 @@ class $modify(MyCreatorLayer, CreatorLayer)
             spr->setPosition(mapSprite->getPosition());
             fameBtn->setPosition(mpb->getPosition());
         }
-
+ 
     endOfHallOfFame:
 
         // this is just a nice thing to do
