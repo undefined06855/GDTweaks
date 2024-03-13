@@ -16,10 +16,7 @@ std::unordered_set<std::string> cornerSpriteNames = {
 // it's pretty clever tbh
 // "remove-corners" + "remove-level-select-top"
 class $modify(CCSprite) {
-    static void onModify(auto & self)
-    {
-        self.setHookPriority("CCSprite::createWithSpriteFrameName", 1000);
-    }
+    static void onModify(auto & self) { self.setHookPriority("CCSprite::createWithSpriteFrameName", 1000); }
 
     static CCSprite* createWithSpriteFrameName(char const* frameName) {
         CCSprite* sprite = CCSprite::createWithSpriteFrameName(frameName);

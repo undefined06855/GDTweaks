@@ -246,7 +246,7 @@ class $modify(MenuLayer)
 
     endOfForceBGId:
 #endif
-
+#ifndef GEODE_IS_MACOS:
         if (Mod::get()->getSettingValue<bool>("remove-player"))
         {
             if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
@@ -268,7 +268,7 @@ class $modify(MenuLayer)
         }
 
     endOfRemovePlayer:
-
+#endif
         // bottom left
         if (Mod::get()->getSettingValue<int64_t>("move-player-to-corner") == 1)
         {

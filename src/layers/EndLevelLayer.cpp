@@ -4,6 +4,7 @@
 
 using namespace geode::prelude;
 
+// "remove-chains"
 class $modify(EndLevelLayer)
 {
 	void customSetup()

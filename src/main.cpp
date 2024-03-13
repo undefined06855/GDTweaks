@@ -14,9 +14,11 @@
 #include "./SectionSpacer.hpp"
 #include "./utils.hpp"
 #include <random>
+// hehe
+#include <ctime>
 using namespace geode::prelude;
 
-// -- stuff needed by other files
+// -- stuff needed by other files  -----------------------------------------------------------------------
 
 // setup random stuff for GJGround and MenuLayer
 std::random_device dev;
@@ -25,7 +27,7 @@ std::mt19937 rng(dev());
 // this is needed basically everywhere
 void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
 {
-    std::cout << "couldn't find " + labelName + " for " + taskName << std::endl;
+    log::info("couldn't find {} for {}", labelName, taskName);
 
     if (Mod::get()->getSettingValue<bool>("suppress-warnings")) return;
 
@@ -41,7 +43,12 @@ void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
 // this is here because it gets set in MenuLayer and is needed in GJGround
 bool loadingMainMenu = false;
 
-// --
+// getting ready for april fools!
+std::time_t timeObject = std::time(0);
+struct tm* timeStruct = localtime(&timeObject);
+
+bool isAprilFools = ((timeStruct->tm_mon == 3) && (timeStruct->tm_mday == 1));
+// -----------------------------------------------------------------------------------------------------
 
 SettingNode* SectionSpacerSetting::createNode(float width) { return SectionSpacerNode::create(this, width); }
 $on_mod(Loaded) {
@@ -49,4 +56,7 @@ $on_mod(Loaded) {
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header2", "");
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header3", "");
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header4", "");
+
+    log::info("Today is {}th of {}", timeStruct->tm_mon, timeStruct->tm_mday);
+    log::info("April Fools? {}", (isAprilFools ? "YEAH!" : "no :("));
 }
