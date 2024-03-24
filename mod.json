@@ -113,7 +113,7 @@
 			"description": "Whether the icons in the main menu get removed. Did you really have to click this?",
 			"type": "bool",
 			"default": false,
-			"platforms": [ "windows", "android" ]
+			"platforms": [ "windows", "android32", "android64" ]
 		},
 		"remove-ground": {
 			"name": "Remove the ground in the main menu",
