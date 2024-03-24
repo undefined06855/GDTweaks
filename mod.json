@@ -5,7 +5,7 @@
     "android": "2.205",
     "mac": "2.200"
   },
-	"version": "v1.11.0",
+	"version": "v1.11.1",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -112,7 +112,8 @@
 			"name": "Remove player in the main menu",
 			"description": "Whether the icons in the main menu get removed. Did you really have to click this?",
 			"type": "bool",
-			"default": false
+			"default": false,
+			"platforms": [ "windows", "android" ]
 		},
 		"remove-ground": {
 			"name": "Remove the ground in the main menu",
