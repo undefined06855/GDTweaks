@@ -1,4 +1,7 @@
 # GDTweaks Changelog
+## v1.12.0
+- Add hide achievements button
+- Add hide stats button
 ## v1.11.1
 - Mac! (thanks to RayDeeUx for testing)
 ## v1.11.0

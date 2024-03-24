@@ -5,7 +5,7 @@
     "android": "2.205",
     "mac": "2.200"
   },
-	"version": "v1.11.1",
+	"version": "v1.12.0",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -47,7 +47,7 @@
 			"default": false
 		},
 		"title-buttons": {
-			"name": "Change title buttons",
+			"name": "Replace newgrounds with Geode",
 			"description": "Whether the title screen newgrounds button gets replaced by Geode.",
 			"type": "bool",
 			"default": true
@@ -144,6 +144,18 @@
 			"description": "Whether the More Games button on the title screen gets replaced with the texture pack selector. *Texture Loader must be installed.",
 			"type": "bool",
 			"default": true
+		},
+		"hide-achievements-button": {
+			"name": "Hide the achievements button",
+			"description": "Whether the achievements button gets hidden on the title screen (what a surpise)",
+			"type": "bool",
+			"default": false
+		},
+		"hide-stats-button": {
+			"name": "Hide the stats button",
+			"description": "Whether the stats button gets hidden on the title screen (what a surpise!!)",
+			"type": "bool",
+			"default": false
 		},
 
 		"header2": {

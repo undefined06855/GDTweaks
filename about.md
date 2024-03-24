@@ -2,18 +2,25 @@
 by [undefined0](user:13351341)
 
 ---
-Miscellaneous things to change the game if you want, dunno really:
-- Skew the title text
-- Replace newgrounds with geode
-- Remove map packs
-- Remove corners
-- Remove the level select topper
-- Fix the joystick indicator
-- Move the betterinfo button
-- Replace "More Games" with a texture pack selector
-- FIRE IN THE HOLE
+Miscellaneous things to "tweak" your GD experience (with Mac and Android support!), such as:
+- Replacing Newgrounds with the Geode icon
+- Fix the main menu settings gamepad icon
+- Force a certain background / ground (or randomise it!)
+- Remove the background / ground
+- Move your account icon into another corner
+- Remove the exit button
+- Replace the "More Games" button with the Textureldr icon
+- Hide the achievements / stats button
+- Hide Map Packs or replace it with the Hall Of Fame
+- Move BetterInfo to the bottom right corner
+- Remove the background in the Icon Kit
+- Remove the lock in the Icon Kit
+- Remove the corner sprite everywhere (it looks better than it sounds, trust me)
+- Fix the joystick scroll icon
+- Remove the orbs label from levels
+- Remove the chains from the end credit screen
 
-and more...
+and more!
 (make sure to use that shiny green settings button in the corner)
 
-Mac support has recently been added (thanks to RayDeeUx), but it could be buggy!
+Mac support has recently been added (thanks to RayDeeUx), but it could be buggy, so tell me if you encounter any issues with Mac (or any issues at all).

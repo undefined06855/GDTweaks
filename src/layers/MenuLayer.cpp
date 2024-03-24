@@ -8,7 +8,7 @@ std::uniform_int_distribution<std::mt19937::result_type> distBG(1, 59);
 
 using namespace geode::prelude;
 
-// "title-text" + "fix-main-menu-settings-gamepad" + "title-buttons" + "replace-more-games-w-texture" + "randomise-main-menu-bg" (bg half) + "move-player-to-corner"
+// "title-text" + "fix-main-menu-settings-gamepad" + "title-buttons" + "replace-more-games-w-texture" + "randomise-main-menu-bg" (bg half) + "move-player-to-corner" + "hide-achievements-button" + "hide-stats-button"
 class $modify(MenuLayer)
 {
     static void onModify(auto & self)
@@ -426,6 +426,52 @@ class $modify(MenuLayer)
         }
 
     endOfMoveDaily:
+
+        if (Mod::get()->getSettingValue<bool>("hide-achievements-button"))
+        {
+            // hide achievements button
+            if (auto achb = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("achievements-button")))
+            {
+                achb->removeFromParent();
+                if (auto btm = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("bottom-menu")))
+                    btm->updateLayout();
+                else
+                {
+                    alert("bottom-menu", "hide the achievements button", this);
+                    goto endOfHideAchievementsButton;
+                }
+            }
+            else
+            {
+                alert("achievements-button", "hide the achievements button", this);
+                goto endOfHideAchievementsButton;
+            }
+        }
+
+    endOfHideAchievementsButton:
+
+        if (Mod::get()->getSettingValue<bool>("hide-stats-button"))
+        {
+            // hide stats button
+            if (auto statb = typeinfo_cast<CCMenuItemSpriteExtra*>(this->getChildByIDRecursive("stats-button")))
+            {
+                statb->removeFromParent();
+                if (auto btm = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("bottom-menu")))
+                    btm->updateLayout();
+                else
+                {
+                    alert("bottom-menu", "hide the achievements button", this);
+                    goto endOfHideStatsButton;
+                }
+            }
+            else
+            {
+                alert("stats-button", "move the daily chest to the bottom right", this);
+                goto endOfHideStatsButton;
+            }
+        }
+
+    endOfHideStatsButton:
 
         return true;
     }
