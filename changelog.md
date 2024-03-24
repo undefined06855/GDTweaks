@@ -1,6 +1,6 @@
 # GDTweaks Changelog
 ## v1.11.1
-- Mac!
+- Mac! (thanks to RayDeeUx for testing)
 ## v1.11.0
 - Added "Remove chains from level end screen" (suggested by imtopline)
 - Fixed "Replace Map Packs with hall of fame"

@@ -15,3 +15,5 @@ Miscellaneous things to change the game if you want, dunno really:
 
 and more...
 (make sure to use that shiny green settings button in the corner)
+
+Mac support has recently been added (thanks to RayDeeUx), but it could be buggy!
