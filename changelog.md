@@ -1,4 +1,6 @@
 # GDTweaks Changelog
+## v1.12.1
+- Change build from nightly to latest
 ## v1.12.0
 - Add hide achievements button
 - Add hide stats button
