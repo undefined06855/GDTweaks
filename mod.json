@@ -2,10 +2,10 @@
 	"geode": "2.0.0",
 	"gd": {
 		"win": "2.204",
-    "android": "2.205",
-    "mac": "2.200"
-  },
-	"version": "v1.12.0",
+	    	"android": "2.205",
+	    	"mac": "2.200"
+  	},
+	"version": "v1.12.1",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
