@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_OSX_ARCHITECTURES "x86_64")
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-project(TestMod VERSION 1.0.0)
+project(GDTweaks VERSION 1.0.0)
 
 # Save this file every time you add a new file to layers (no need to make any changes to this file) 
 file(GLOB SOURCES
