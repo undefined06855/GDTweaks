@@ -1,7 +1,8 @@
 # GDTweaks Changelog
+## v1.12.2
+- Fix some goofy bug with removing the orbs label from levels
 ## v1.12.1
 - Change build from nightly to latest
-- Fix some goofy bug with removing the orbs label from levels
 ## v1.12.0
 - Add hide achievements button
 - Add hide stats button
