@@ -1,4 +1,6 @@
 # GDTweaks Changelog
+## v1.12.1
+- Fix some goofy bug with removing the orbs label from levels
 ## v1.12.0
 - Add hide achievements button
 - Add hide stats button
@@ -70,4 +72,3 @@
 - Fixed the buttons at the bottom of the screen on ultrawide (hopefully fixed)
 ## 1.0.0
 - Initial release
-

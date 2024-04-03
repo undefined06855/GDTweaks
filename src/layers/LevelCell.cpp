@@ -11,21 +11,24 @@ class $modify(LevelCell)
 
 		if (Mod::get()->getSettingValue<bool>("remove-orbs"))
 		{
+			// we DONT want to alert when it doesnt exist since it wont
+			// exist for levels that havent been touched yet
+
 			if (auto orbIcon = this->getChildByIDRecursive("orbs-icon"))
 				orbIcon->setVisible(false);
-			else
-			{
-				alert("orbs-icon", "remove the orbs label", this);
-				goto endOfRemoveOrbs;
-			}
+			//else
+			//{
+			//	alert("orbs-icon", "remove the orbs label", this);
+			//	goto endOfRemoveOrbs;
+			//}
 
 			if (auto orbLabel = this->getChildByIDRecursive("orbs-label"))
 				orbLabel->setVisible(false);
-			else
-			{
-				alert("orbs-label", "remove the orbs label", this);
-				goto endOfRemoveOrbs;
-			}
+			//else
+			//{
+			//	alert("orbs-label", "remove the orbs label", this);
+			//	goto endOfRemoveOrbs;
+			//}
 		}
 
 	endOfRemoveOrbs:

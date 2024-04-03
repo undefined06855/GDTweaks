@@ -44,6 +44,7 @@ void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
 bool loadingMainMenu = false;
 
 // getting ready for april fools!
+// haha i never ended up using this
 std::time_t timeObject = std::time(0);
 struct tm* timeStruct = localtime(&timeObject);
 
