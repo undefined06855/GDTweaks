@@ -2,16 +2,18 @@
 	"geode": "2.0.0-beta.24",
 	"gd": {
 		"win": "2.204",
-    "android": "2.205",
-    "mac": "2.200"
-  },
-	"version": "v1.12.2",
+    		"android": "2.205",
+    		"mac": "2.200"
+	},
+	
+	"version": "v1.12.3",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
 	"description": "tweak the geometry",
 	"repository": "https://github.com/undefined06855/GDTweaks",
 	"tags": [ "interface", "enhancement" ],
+	
 	"dependencies": [
 		{
 			"id": "geode.texture-loader",
