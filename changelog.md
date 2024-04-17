@@ -1,4 +1,7 @@
 # GDTweaks Changelog
+## v1.12.3
+- Bump to beta 24
+- Add postscript which may or may not relate to sdslayer turning on absolutely everything
 ## v1.12.2
 - Fix some goofy bug with removing the orbs label from levels
 ## v1.12.1
