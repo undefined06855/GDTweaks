@@ -23,4 +23,4 @@ Miscellaneous things to "tweak" your GD experience (with Mac and Android support
 and more!
 (make sure to use that shiny green settings button in the corner)
 
-Mac support has recently been added (thanks to RayDeeUx), but it could be buggy, so tell me if you encounter any issues with Mac (or any issues at all).
+PS: please don't be like sdslayer and turn everything on and expect it to work fine :)
