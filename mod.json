@@ -2,11 +2,10 @@
 	"geode": "3.0.0-alpha.1",
 	"gd": {
 		"win": "2.206",
-    		"android": "2.206",
-    		"mac": "2.206"
+    		"android": "2.206"
 	},
 	
-	"version": "v1.12.3",
+	"version": "v1.12.3-alpha.1",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -16,18 +15,8 @@
 	
 	"dependencies": [
 		{
-			"id": "geode.texture-loader",
-			"version": "v1.4.1",
-			"importance": "suggested"
-		},
-		{
-			"id": "cvolton.betterinfo",
-			"version": "v4.0.0-alpha.9",
-			"importance": "suggested"
-		},
-		{
 			"id": "geode.node-ids",
-			"version": "v1.3.0",
+			"version": ">=v1.3.0",
 			"importance": "required"
 		}
 	],
@@ -141,12 +130,6 @@
 			"type": "bool",
 			"default": false
 		},
-		"replace-more-games-w-texture": {
-			"name": "Replace \"More Games\" with texture pack",
-			"description": "Whether the More Games button on the title screen gets replaced with the texture pack selector. *Texture Loader must be installed.",
-			"type": "bool",
-			"default": true
-		},
 		"hide-achievements-button": {
 			"name": "Hide the achievements button",
 			"description": "Whether the achievements button gets hidden on the title screen (what a surpise)",
@@ -175,12 +158,6 @@
 			"description": "Whether the map pack button gets replaced with the Hall Of Fame",
 			"type": "bool",
 			"default": false
-		},
-		"move-betterinfo": {
-			"name": "Move BetterInfo button",
-			"description": "Whether the BetterInfo button gets moved into the corner. *BetterInfo must be installed.",
-			"type": "bool",
-			"default": true
 		},
 
 		"header3": {
