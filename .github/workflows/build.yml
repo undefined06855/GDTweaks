@@ -39,6 +39,7 @@ jobs:
         with:
           cli: 'v3.0.0-beta.1'
           combine: true
+          sdk: 'nightly'
           target: ${{ matrix.config.target }}
       
   package:
