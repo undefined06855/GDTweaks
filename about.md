@@ -2,6 +2,10 @@
 by [undefined0](user:13351341)
 
 ---
+
+This is an alpha version for Geode 3.0.0-alpha.1! Expect things to be broken.
+
+
 Miscellaneous things to "tweak" your GD experience (with Mac and Android support!), such as:
 - Replacing Newgrounds with the Geode icon
 - Fix the main menu settings gamepad icon
@@ -21,6 +25,6 @@ Miscellaneous things to "tweak" your GD experience (with Mac and Android support
 - Remove the chains from the end credit screen
 
 and more!
-(make sure to use that shiny green settings button in the corner)
+(make sure to use that shiny yellow settings button in the bottom left corner)
 
 PS: please don't be like sdslayer and turn everything on and expect it to work fine :)

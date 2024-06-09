@@ -33,27 +33,29 @@ protected:
 
         // scale lines depending on quality
         auto quality = GameManager::sharedState()->m_texQuality;
-        auto scaleX = 11;
-        auto scaleY = 0.3;
+
+        // uhd
+        auto scaleX = 11.f;
+        auto scaleY = 0.3f;
 
         // sd
         if (quality == 1)
         {
-            scaleX = 3.025;
-            scaleY = 0.075;
+            scaleX = 3.025f;
+            scaleY = 0.075f;
         }
         // "hd"
         else if (quality == 2)
         {
-            scaleX = 6.2;
-            scaleY = 0.175;
+            scaleX = 6.2f;
+            scaleY = 0.175f;
         }
 
         // streakb is the only solid square texture - square02-001 has rounded corners
         auto lineLeft = CCSprite::create("streakb_01_001.png");
         auto lineRight = CCSprite::create("streakb_01_001.png");
 
-        label->setScale(.5);
+        label->setScale(.5f);
         label->setPositionX(0);
 
         lineLeft->setPosition(CCPoint{ -115, 0 });
@@ -72,7 +74,7 @@ protected:
         menu->addChild(lineLeft);
         menu->addChild(lineRight);
         menu->addChild(label);
-        menu->setPosition(width / 2, 25.0 / 2);
+        menu->setPosition(width / 2, 25.f / 2);
 
         this->addChild(menu);
 
