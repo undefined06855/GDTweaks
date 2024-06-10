@@ -2,10 +2,11 @@
 	"geode": "3.0.0-alpha.1",
 	"gd": {
 		"win": "2.206",
-    "android": "2.206"
+		"android": "2.206",
+		"mac": "2.206"
 	},
 	
-	"version": "v1.12.4-alpha.1",
+	"version": "v1.12.4-alpha.2",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -17,6 +18,11 @@
 		{
 			"id": "geode.texture-loader",
 			"version": ">=v1.6.0",
+			"importance": "suggested"
+		},
+		{
+			"id": "cvolton.betterinfo",
+			"version": ">=v4.2.0-alpha.2",
 			"importance": "suggested"
 		},
 		{
@@ -169,6 +175,12 @@
 			"description": "Whether the map pack button gets replaced with the Hall Of Fame",
 			"type": "bool",
 			"default": false
+		},
+		"move-betterinfo": {
+			"name": "Move BetterInfo button",
+			"description": "Whether the BetterInfo button gets moved into the corner. *BetterInfo must be installed.",
+			"type": "bool",
+			"default": true
 		},
 
 		"header3": {

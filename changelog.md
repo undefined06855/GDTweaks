@@ -1,4 +1,7 @@
 # GDTweaks Changelog
+## v1.12.4-alpha.2
+- Now up to date with the removed features from v1.12.3
+- Readded mac support
 ## v1.12.4-alpha.1
 - Geode 3.0.0 alpha build
 - No mac / betterinfo support
