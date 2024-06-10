@@ -15,10 +15,8 @@ jobs:
         - name: Windows
           os: windows-latest
           
-        # there's basically no bindings for mac :face_with_3_hearts:
-        # anyway who uses mac
-        # - name: macOS
-        #   os: macos-latest
+        - name: macOS
+          os: macos-latest
 
         - name: Android32
           os: ubuntu-latest
