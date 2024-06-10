@@ -3,7 +3,7 @@ by [undefined0](user:13351341)
 
 ---
 
-This is an alpha version for Geode 3.0.0-alpha.1! Expect things to be broken.
+## This is an alpha version for Geode 3.0.0-alpha.1! Expect things to be broken.
 
 
 Miscellaneous things to "tweak" your GD experience (with Mac and Android support!), such as:

@@ -254,10 +254,12 @@ class $modify(MenuLayer)
                 auto children = mainMenuBG->getChildren();
                 for (int i = 0; i < mainMenuBG->getChildrenCount(); i++)
                 {
-                    if (auto node = typeinfo_cast<HardStreak*>          (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
-                    if (auto node = typeinfo_cast<CCMotionStreak*>      (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
-                    if (auto node = typeinfo_cast<CCParticleSystemQuad*>(mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
-                    if (auto node = typeinfo_cast<PlayerObject*>        (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); continue; }
+                    // some of these force visibility back to 1
+                    // so scale AND visibility needs to be enforced
+                    if (auto node = typeinfo_cast<HardStreak*>          (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); node->setScale(0.f); continue; }
+                    if (auto node = typeinfo_cast<CCMotionStreak*>      (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); node->setScale(0.f); continue; }
+                    if (auto node = typeinfo_cast<CCParticleSystemQuad*>(mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); node->setScale(0.f); continue; }
+                    if (auto node = typeinfo_cast<PlayerObject*>        (mainMenuBG->getChildren()->objectAtIndex(i))) { node->setVisible(false); node->setScale(0.f); continue; }
                 }
             }
             else
