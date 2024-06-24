@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
+#include <Geode/ui/GeodeUI.hpp>
 #include "../utils.hpp"
 
 #include <random>
@@ -9,7 +10,7 @@ std::uniform_int_distribution<std::mt19937::result_type> distBG(1, 59);
 using namespace geode::prelude;
 
 // "title-text" + "fix-main-menu-settings-gamepad" + "title-buttons" + "replace-more-games-w-texture" + "randomise-main-menu-bg" (bg half) + "move-player-to-corner" + "hide-achievements-button" + "hide-stats-button"
-class $modify(MenuLayer)
+class $modify(TweakedMenuLayer, MenuLayer)
 {
     static void onModify(auto & self)
     {
@@ -475,15 +476,62 @@ class $modify(MenuLayer)
 
     endOfHideStatsButton:
 
+        if (Mod::get()->getSettingValue<bool>("change-geode-icon"))
+        {
+            auto bottomMenu = this->getChildByID("bottom-menu");
+            if (!bottomMenu)
+            {
+                alert("bottom-menu", "colourise the geode icon", this);
+                goto endOfChangeGeodeIcon;
+            }
+
+            auto geodeBtn = bottomMenu->getChildByID("geode.loader/geode-button");
+            if (!geodeBtn)
+            {
+                alert("geode.loader/geode-button", "colourise the geode icon", this);
+                goto endOfChangeGeodeIcon; // ??? no clue when this would happen but I have to check anyway
+            }
+
+            auto buttonSprite = typeinfo_cast<CircleButtonSprite*>(geodeBtn->getChildren()->objectAtIndex(0));
+            if (!buttonSprite)
+            {
+                alert("geode.loader/geode-button -> child 0", "colourise the geode icon", this);
+                goto endOfChangeGeodeIcon; // ??? no clue when this would happen either but I have to check anyway
+            }
+
+            auto geodeLogo = typeinfo_cast<CCSprite*>(buttonSprite->getChildren()->objectAtIndex(0));
+            if (!geodeLogo)
+            {
+                alert("geode.loader/geode-button -> child 0 -> child 0", "colourise the geode icon", this);
+                goto endOfChangeGeodeIcon; // ??? no clue when this would happen either either but I have to check anyway
+            }
+
+            geodeLogo->removeFromParent();
+
+            auto newGeodeLogo = CCSprite::create("geodenew.png"_spr);
+            buttonSprite->addChild(newGeodeLogo);
+
+            // amazing magic numbers with a lot of thought and care put into them
+            newGeodeLogo->setPosition(CCPoint{ 26.15f, 28.5f });
+            newGeodeLogo->setScale(.625f);
+        }
+
+    endOfChangeGeodeIcon:
+
         return true;
     }
 
-    void onPlay(CCObject * sender)
+    void onPlay(CCObject* sender)
     {
         MenuLayer::onPlay(sender);
 
         if (!Mod::get()->getSettingValue<bool>("fire-in-the-hole")) return;
 
         FMODAudioEngine::sharedEngine()->playEffect("fire.ogg"_spr);
+    }
+
+    void onGeode(CCObject* sender) {
+        log::debug("open mods list");
+        geode::openModsList();
     }
 };

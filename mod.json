@@ -1,12 +1,12 @@
 {
-	"geode": "3.0.0-alpha.1",
+	"geode": "3.1.0",
 	"gd": {
 		"win": "2.206",
 		"android": "2.206",
 		"mac": "2.206"
 	},
-	
-	"version": "v1.12.4-alpha.2",
+
+	"version": "v1.12.5",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -22,19 +22,19 @@
 		},
 		{
 			"id": "cvolton.betterinfo",
-			"version": ">=v4.2.0-alpha.2",
+			"version": ">=v4.2.0-beta.3",
 			"importance": "suggested"
 		},
 		{
 			"id": "geode.node-ids",
-			"version": ">=1.12.0-beta.2",
+			"version": ">=1.12.0",
 			"importance": "required"
 		}
 	],
 
 	"resources": {
 		"files": [ "resources/fire.ogg" ],
-		"sprites": [ "resources/fame.png" ]
+		"sprites": [ "resources/fame.png", "resources/geodenew.png" ]
 	},
 
 	"settings": {
@@ -115,7 +115,7 @@
 			"description": "Whether the icons in the main menu get removed. Did you really have to click this?",
 			"type": "bool",
 			"default": false,
-			"platforms": [ "windows", "android32", "android64" ]
+			"platforms": [ "win", "android32", "android64" ]
 		},
 		"remove-ground": {
 			"name": "Remove the ground in the main menu",
@@ -156,6 +156,12 @@
 		"hide-stats-button": {
 			"name": "Hide the stats button",
 			"description": "Whether the stats button gets hidden on the title screen (what a surpise!!)",
+			"type": "bool",
+			"default": false
+		},
+		"change-geode-icon": {
+			"name": "Colourise the Geode icon",
+			"description": "Whether the geode icon gets colourful! See issue #19 at https://github.com/undefined06855/GDTweaks/issues/19.",
 			"type": "bool",
 			"default": false
 		},

@@ -14,8 +14,6 @@
 #include "./SectionSpacer.hpp"
 #include "./utils.hpp"
 #include <random>
-// hehe
-#include <ctime>
 using namespace geode::prelude;
 
 // -- stuff needed by other files  -----------------------------------------------------------------------
@@ -43,12 +41,6 @@ void alert(std::string labelName, std::string taskName, cocos2d::CCNode* _this)
 // this is here because it gets set in MenuLayer and is needed in GJGround
 bool loadingMainMenu = false;
 
-// getting ready for april fools!
-// haha i never ended up using this
-std::time_t timeObject = std::time(0);
-struct tm* timeStruct = localtime(&timeObject);
-
-bool isAprilFools = ((timeStruct->tm_mon == 3) && (timeStruct->tm_mday == 1));
 // -----------------------------------------------------------------------------------------------------
 
 SettingNode* SectionSpacerSetting::createNode(float width) { return SectionSpacerNode::create(this, width); }
@@ -58,6 +50,8 @@ $on_mod(Loaded) {
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header3", "");
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header4", "");
 
-    log::info("Today is {}th of {}", timeStruct->tm_mon, timeStruct->tm_mday);
-    log::info("April Fools? {}", (isAprilFools ? "YEAH!" : "no :("));
+    CCSpriteFrameCache::get()->addSpriteFrame(
+        CCSpriteFrame::create("geodenew.png"_spr, CCRect{ 0, 0, 280/4, 280/4 }),
+        "geodenew.png"_spr
+    );
 }

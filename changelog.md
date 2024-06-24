@@ -1,4 +1,7 @@
 # GDTweaks Changelog
+## v1.12.5
+- Geode 3.1.0 build
+- Added Colourise the Geode icon (suggested by WhitteeDaKitty, #19)
 ## v1.12.4-alpha.2
 - Now up to date with the removed features from v1.12.3
 - Readded mac support
@@ -6,8 +9,6 @@
 ## v1.12.4-alpha.1
 - Geode 3.0.0 alpha build
 - No mac / betterinfo support
-- Probably will be bumped to full 1.12.4 once 2.207/2.21 comes out and inlining shit gets fixed
-- (and this changelog entry will be removed)
 ## v1.12.3
 - Bump to beta 24
 - Add postscript which may or may not relate to sdslayer turning on absolutely everything
