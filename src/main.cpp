@@ -49,9 +49,4 @@ $on_mod(Loaded) {
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header2", "");
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header3", "");
     Mod::get()->addCustomSetting<SectionSpacerSetting>("header4", "");
-
-    CCSpriteFrameCache::get()->addSpriteFrame(
-        CCSpriteFrame::create("geodenew.png"_spr, CCRect{ 0, 0, 280/4, 280/4 }),
-        "geodenew.png"_spr
-    );
 }
