@@ -30,14 +30,15 @@ jobs:
     runs-on: ${{ matrix.config.os }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build the mod
         uses: geode-sdk/build-geode-mod@main
         with:
-          cli: 'v3.0.0-beta.1'
+          cli: 'v3.1.0'
           combine: true
-          sdk: 'nightly'
+          bindings: 'undefined06855/bindings'
+          sdk: 'latest'
           target: ${{ matrix.config.target }}
       
   package:
