@@ -1,12 +1,12 @@
 {
-	"geode": "3.1.0",
+	"geode": "3.1.1",
 	"gd": {
 		"win": "2.206",
 		"android": "2.206",
 		"mac": "2.206"
 	},
 
-	"version": "v1.12.5",
+	"version": "v1.12.6",
 	"id": "undefined0.gdtweaks",
 	"name": "GDTweaks",
 	"developer": "undefined0",
@@ -59,12 +59,6 @@
 			"description": "Whether the play button on the title screen plays \"FIRE IN THE HOLE\" when clicked.",
 			"type": "bool",
 			"default": false
-		},
-		"fix-main-menu-settings-gamepad": {
-			"name": "Fix the main menu's settings gamepad icon",
-			"description": "Whether the d-pad down gamepad icon on the main menu gets adjusted. Only turn this on if the positioning is broken, else it might make it worse.",
-			"type": "bool",
-			"default": true
 		},
 		"randomise-main-menu-bg": {
 			"name": "Randomise main menu ground + background",
@@ -162,6 +156,18 @@
 		"change-geode-icon": {
 			"name": "Colourise the Geode icon",
 			"description": "Whether the geode icon gets colourful! See issue #19 at https://github.com/undefined06855/GDTweaks/issues/19.",
+			"type": "bool",
+			"default": false
+		},
+		"remove-exclamation": {
+			"name": "Remove Geode exclamation mark",
+			"description": "Tired of geode benig angry all the time? Well now you don't have to be.",
+			"type": "bool",
+			"default": false
+		},
+		"remove-update": {
+			"name": "Remove Geode update dot",
+			"description": "Tired of geode benig angry all the time? Well now you don't have to be.",
 			"type": "bool",
 			"default": false
 		},

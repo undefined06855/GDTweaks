@@ -82,17 +82,6 @@ class $modify(TweakedMenuLayer, MenuLayer)
 
     endOfRemoveExitButton:
 
-        if (Mod::get()->getSettingValue<bool>("fix-main-menu-settings-gamepad"))
-        {
-            // this is added by geode, so should exist in theory, but might as well check for nullptr anyway
-            if (auto controllerIcon = typeinfo_cast<CCSprite*>(this->getChildByIDRecursive("settings-gamepad-icon")))
-            {
-                // wowee magic numbers
-                // Ic hope this isnt broken on widescreen
-                controllerIcon->setPositionX(255.0f);
-            }
-        }
-
         if (Mod::get()->getSettingValue<bool>("title-buttons"))
         {
             // remove newgrounds button + move geode button to where it used to be
@@ -517,6 +506,40 @@ class $modify(TweakedMenuLayer, MenuLayer)
         }
 
     endOfChangeGeodeIcon:
+
+        if (Mod::get()->getSettingValue<bool>("remove-exclamation"))
+        {
+            auto bottomMenu = this->getChildByID("bottom-menu");
+            if (!bottomMenu)
+            {
+                alert("bottom-menu", "remove the geode exclamation mark", this);
+                goto endOfRemoveExclamation;
+            }
+
+            auto geodeBtn = bottomMenu->getChildByID("geode.loader/geode-button");
+            if (!geodeBtn)
+            {
+                alert("geode.loader/geode-button", "remove the geode exclamation mark", this);
+                goto endOfRemoveExclamation; // ??? no clue when this would happen but I have to check anyway
+            }
+
+            // getChildByIDRecursive isnt that bad here since the node tree is literally
+            // geode.loader/geode-button
+            // \ CircleButtonSprite
+            //   | CCSprite - the icon
+            //   \ errors-found - the exclamation mark
+
+            auto sillyLittleExclamationMark = geodeBtn->getChildByIDRecursive("errors-found");
+            if (!sillyLittleExclamationMark)
+            {
+                // there could just be no errors
+                goto endOfRemoveExclamation;
+            }
+
+            sillyLittleExclamationMark->setVisible(false);
+        }
+
+    endOfRemoveExclamation:
 
         return true;
     }

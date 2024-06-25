@@ -27,6 +27,10 @@ class $modify(CCSprite) {
         if (strcmp(frameName, "GJ_topBar_001.png") == 0 && Mod::get()->getSettingValue<bool>("remove-level-select-top"))
             sprite->setVisible(false); // remove level select topper thingymabob
 
+        // remove the update dot (have to do it here and not where the exclamation mark is since it gets added after a web req)
+        if (strcmp(frameName, "geode.loader/updates-available.png") == 0 && Mod::get()->getSettingValue<bool>("remove-update"))
+            sprite->setVisible(false);
+
         return sprite;
     }
 };

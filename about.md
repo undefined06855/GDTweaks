@@ -20,6 +20,8 @@ Miscellaneous things to "tweak" your GD experience (with Mac and Android support
 - Fix the joystick scroll icon
 - Remove the orbs label from levels
 - Remove the chains from the end credit screen
+- Colourise the Geode icon
+- Remove that pesky exclamation mark from the Geode logo
 
 and more!
 (make sure to use that shiny yellow settings button in the bottom left corner)
