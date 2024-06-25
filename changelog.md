@@ -1,6 +1,6 @@
 # GDTweaks Changelog
 ## v1.12.6
-- Add "Remove Geode Exclamation Mark"
+- Add "Remove Geode Exclamation Mark" and "Remove Geode update dot"
 - Removed "Fix main menu settings gamepad icon" - was just too broken and the positioning is too hard to figure out
 ## v1.12.5
 - Geode 3.1.0 build
