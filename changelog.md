@@ -1,4 +1,6 @@
 # GDTweaks Changelog
+## v1.12.7
+- Changed the scale of the texture loader button when "Replace "More Games" with texture pack" is enabled (suggested by avilax)
 ## v1.12.6
 - Add "Remove Geode Exclamation Mark" and "Remove Geode update dot"
 - Removed "Fix main menu settings gamepad icon" - was just too broken and the positioning is too hard to figure out

@@ -109,12 +109,8 @@ class $modify(TweakedMenuLayer, MenuLayer)
             if (!Loader::get()->isModLoaded("geode.texture-loader")) goto endOfReplaceMoreGamesWithTexture;
 
             // replace more games button with texture selector
-            // alright so I know that this is probably definitely bad practice to use objectAtIndex but
-            // it's the only way to get this afaik and to be honest what other mods actually use the right side menu?
-            // ok so basically there is a mod that uses the right side menu
-            // and hopefully that's going to be the only one because I am NOT remaking these magic numbers again
             auto rsm = this->getChildByIDRecursive("right-side-menu");
-            auto obj = rsm->getChildren()->objectAtIndex(rsm->getChildrenCount() == 2 ? 1 : 2); // 1 is normal, 2 is modified
+            auto obj = this->getChildByIDRecursive("geode.texture-loader/texture-loader-button");
             auto mgm = this->getChildByIDRecursive("more-games-menu"); // this might have been deleted
             auto mgb = this->getChildByIDRecursive("more-games-button");
 
@@ -124,7 +120,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
                 if (!mgb) label = "more-games-button";
                 else if (!mgm) label = "more-games-menu";
                 else if (!rsm) label = "right-side-menu";
-                else if (!obj) label = "(the texture selector menuitem)";
+                else if (!obj) label = "geode.texture-loader/texture-loader-button";
 
                 alert(label, "replace the more games button with the texture selector", this);
                 goto endOfReplaceMoreGamesWithTexture;
@@ -145,6 +141,10 @@ class $modify(TweakedMenuLayer, MenuLayer)
 
                 // and move the menu to the left a smidge
                 mgm->setPositionX(mgm->getPositionX() - 16);
+
+                texSelector->setPosition(CCPoint{ 80.75f, 13.75f });
+                // not checking anything here since like there's no way the sprite is gone
+                typeinfo_cast<CCSprite*>(texSelector->getChildren()->objectAtIndex(0))->setScale(1.225f);
             }
         }
 
