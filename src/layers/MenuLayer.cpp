@@ -144,7 +144,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
 
                 texSelector->setPosition(CCPoint{ 80.75f, 13.75f });
                 // not checking anything here since like there's no way the sprite is gone
-                typeinfo_cast<CCSprite*>(texSelector->getChildren()->objectAtIndex(0))->setScale(1.225f);
+                typeinfo_cast<CCSprite*>(texSelector->getChildren()->objectAtIndex(0))->setScale(1.26f);
             }
         }
 
