@@ -7,7 +7,7 @@ using namespace geode::prelude;
 // "garage-bg-remove" + "garage-lock-tap-remove" + 
 class $modify(GJGarageLayer)
 {
-    static void onModify(auto & self)
+    static void onModify(auto& self)
     {
         self.setHookPriority("GJGarageLayer::init", 100);
     }
@@ -29,7 +29,7 @@ class $modify(GJGarageLayer)
             }
 
             //std::cout << "couldnt find ccscale9sprite for icon kit" << std::endl;
-            alert("icon kit background", "removing the icon kit background", this);
+            gdtutils::alert("icon kit background", "removing the icon kit background", this);
         }
 
     endOfGarageBGRemove:
@@ -47,7 +47,7 @@ class $modify(GJGarageLayer)
                 lock->setVisible(false);
             else
             {
-                alert("tap-more-hint", "removing the tap for more info lock", this);
+                gdtutils::alert("tap-more-hint", "removing the tap for more info lock", this);
                 goto endOfGarageLockTapRemove;
             }
 
@@ -55,7 +55,7 @@ class $modify(GJGarageLayer)
                 player->setPositionY(222);
             else
             {
-                alert("player-icon", "removing the tap for more info lock", this);
+                gdtutils::alert("player-icon", "removing the tap for more info lock", this);
                 goto endOfGarageLockTapRemove;
             }
 
@@ -63,7 +63,7 @@ class $modify(GJGarageLayer)
                 iconTypeSelector->setPositionY(171);
             else
             {
-                alert("category-menu", "removing the tap for more info lock", this);
+                gdtutils::alert("category-menu", "removing the tap for more info lock", this);
                 goto endOfGarageLockTapRemove;
             }
 
@@ -71,7 +71,7 @@ class $modify(GJGarageLayer)
                 line->setPositionY(197);
             else
             {
-                alert("floor-line", "removing the tap for more info lock", this);
+                gdtutils::alert("floor-line", "removing the tap for more info lock", this);
                 goto endOfGarageLockTapRemove;
             }
         }

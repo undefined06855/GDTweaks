@@ -9,10 +9,10 @@ std::uniform_int_distribution<std::mt19937::result_type> distBG(1, 59);
 
 using namespace geode::prelude;
 
-// "title-text" + "fix-main-menu-settings-gamepad" + "title-buttons" + "replace-more-games-w-texture" + "randomise-main-menu-bg" (bg half) + "move-player-to-corner" + "hide-achievements-button" + "hide-stats-button"
+// "title-text" + "title-buttons" + "replace-more-games-w-texture" + "randomise-main-menu-bg" (bg half) + "move-player-to-corner" + "hide-achievements-button" + "hide-stats-button"
 class $modify(TweakedMenuLayer, MenuLayer)
 {
-    static void onModify(auto & self)
+    static void onModify(auto& self)
     {
         // run after texture selector
         self.setHookPriority("MenuLayer::init", -100);
@@ -20,9 +20,9 @@ class $modify(TweakedMenuLayer, MenuLayer)
 
     bool init()
     {
-        loadingMainMenu = true;
+        gdtutils::loadingMainMenu = true;
         if (!MenuLayer::init()) return false;
-        loadingMainMenu = false;
+        gdtutils::loadingMainMenu = false;
 
         if (Mod::get()->getSettingValue<bool>("title-text"))
         {
@@ -33,7 +33,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
             // might as well check for it anyway
             if (!t)
             {
-                alert("main-title", "skew the title text", this);
+                gdtutils::alert("main-title", "skew the title text", this);
                 goto endOfTitleThing;
             }
 
@@ -47,7 +47,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
             // put bg behind title
             if (!this->getChildByIDRecursive("main-menu-bg"))
             {
-                alert("main-menu-bg", "skew the title text", this);
+                gdtutils::alert("main-menu-bg", "skew the title text", this);
                 goto endOfTitleThing;
             }
 
@@ -69,13 +69,13 @@ class $modify(TweakedMenuLayer, MenuLayer)
                     exitMenu->updateLayout();
                 else
                 {
-                    alert("close-menu", "remove the exit button", this);
+                    gdtutils::alert("close-menu", "remove the exit button", this);
                     goto endOfRemoveExitButton;
                 }
             }
             else
             {
-                alert("close-button", "remove the exit button", this);
+                gdtutils::alert("close-button", "remove the exit button", this);
                 goto endOfRemoveExitButton;
             }
         }
@@ -88,7 +88,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
             auto ng = this->getChildByIDRecursive("newgrounds-button");
             if (!ng)
             {
-                alert("newgrounds-button", "move geode button to where the newgrounds button was", this);
+                gdtutils::alert("newgrounds-button", "move geode button to where the newgrounds button was", this);
                 goto endOfTitleButtonThing;
             }
             this->getChildByIDRecursive("geode.loader/geode-button")->setPositionX(ng->getPositionX());
@@ -96,7 +96,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
             auto btm = this->getChildByIDRecursive("bottom-menu");
             if (!btm)
             {
-                alert("bottom-menu", "move geode button to where the newgrounds button was", this);
+                gdtutils::alert("bottom-menu", "move geode button to where the newgrounds button was", this);
                 goto endOfTitleButtonThing;
             }
             btm->updateLayout();
@@ -122,7 +122,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
                 else if (!rsm) label = "right-side-menu";
                 else if (!obj) label = "geode.texture-loader/texture-loader-button";
 
-                alert(label, "replace the more games button with the texture selector", this);
+                gdtutils::alert(label, "replace the more games button with the texture selector", this);
                 goto endOfReplaceMoreGamesWithTexture;
             }
 
@@ -144,7 +144,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
 
                 texSelector->setPosition(CCPoint{ 80.75f, 13.75f });
                 // not checking anything here since like there's no way the sprite is gone
-                typeinfo_cast<CCSprite*>(texSelector->getChildren()->objectAtIndex(0))->setScale(1.26f);
+                static_cast<CCSprite*>(texSelector->getChildren()->objectAtIndex(0))->setScale(1.26f);
             }
         }
 
@@ -157,48 +157,23 @@ class $modify(TweakedMenuLayer, MenuLayer)
             if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
             {
                 if (auto tex = typeinfo_cast<CCTextureProtocol*>(mainMenuBG->getChildren()->objectAtIndex(0))) {
-                    std::string rand = std::to_string(distBG(rng));
-
-                    /*
-                     * 0: auto
-                     * 1: sd
-                     * 2: hd
-                     * 3: uhd
-                     */
-                    int textureQuality = GameManager::sharedState()->m_texQuality;
-                    std::string textureQualityString = "-uhd"; // textureQuality == 0 or 3
-                    // auto uses the size of the window to determine the resolution
-                    // but idc it's always uhd :)
-                    // if someone can figure out how it does it then please submit a pr
-                    // thanks
-
-                    if      (textureQuality == 1) textureQualityString = ""; // "sd" quality doesnt have a suffix
-                    else if (textureQuality == 2) textureQualityString = "-hd";
-
-                    // pad number to be two digits
-                    if (rand.length() == 1)
-                        rand = "0" + rand;
-                    
-                    std::string string = "game_bg_" + rand + "_001" + textureQualityString + ".png";
-
-
                     // literally had to follow a 10 YEAR OLD STACKOVERFLOW POST for this to work
                     // https://stackoverflow.com/a/21699549
                     // (and it doesnt even work on android)
-                    auto newTexture = CCSprite::create(string.c_str());
+                    auto newTexture = CCSprite::create(fmt::format("game_bg_{:02}_001.png", distBG(gdtutils::rng)).c_str());
                     ccTexParams tp = { GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT };
                     newTexture->getTexture()->setTexParameters(&tp);
                     tex->setTexture(newTexture->getTexture());
                 }
                 else
                 {
-                    alert("(first child of) main-menu-bg", "randomise the main menu background", this);
+                    gdtutils::alert("(first child of) main-menu-bg", "randomise the main menu background", this);
                     goto endOfRandomiseMainMenuBG;
                 }
             }
             else
             {
-                alert("main-menu-bg", "randomise the main menu background", this);
+                gdtutils::alert("main-menu-bg", "randomise the main menu background", this);
                 goto endOfRandomiseMainMenuBG;
             }
         }
@@ -223,20 +198,20 @@ class $modify(TweakedMenuLayer, MenuLayer)
                 }
                 else
                 {
-                    alert("(first child of) main-menu-bg", "force the main menu background to id " + bg, this);
+                    gdtutils::alert("(first child of) main-menu-bg", fmt::format("force the main menu background to id {}", bg), this);
                     goto endOfForceBGId;
                 }
             }
             else
             {
-                alert("main-menu-bg", "force the main menu background to id " + bg, this);
+                gdtutils::alert("main-menu-bg", fmt::format("force the main menu background to id {}", bg), this);
                 goto endOfForceBGId;
             }
         }
 
     endOfForceBGId:
 #endif
-#ifndef GEODE_IS_MACOS:
+#ifndef GEODE_IS_MACOS
         if (Mod::get()->getSettingValue<bool>("remove-player"))
         {
             if (auto mainMenuBG = typeinfo_cast<MenuGameLayer*>(this->getChildByIDRecursive("main-menu-bg")))
@@ -254,7 +229,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
             }
             else
             {
-                alert("main-menu-bg", "remove the player", this);
+                gdtutils::alert("main-menu-bg", "remove the player", this);
                 goto endOfRemovePlayer;
             }
         }
@@ -262,7 +237,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
     endOfRemovePlayer:
 #endif
         // bottom left
-        if (Mod::get()->getSettingValue<int64_t>("move-player-to-corner") == 1)
+        if (Mod::get()->getSettingValue<std::string>("move-player-to-corner") == "bottom left")
         {
             if (auto socialMediaMenu = typeinfo_cast<CCMenu*>(this->getChildByIDRecursive("social-media-menu")))
                 socialMediaMenu->setVisible(false); // a mod already does this, but have to hide it anyway in case the player doesn't have it
@@ -271,7 +246,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
                 profileMenu->setPositionY(profileMenu->getPositionY() - 60);
             else
             {
-                alert("profile-menu", "move the icon to the corner", this);
+                gdtutils::alert("profile-menu", "move the icon to the corner", this);
                 goto endOfMovePlayerToCorner;
             }
 
@@ -279,11 +254,11 @@ class $modify(TweakedMenuLayer, MenuLayer)
                 username->setPositionY(username->getPositionY() - 60);
             else
             {
-                alert("player-username", "move the icon to the corner", this);
+                gdtutils::alert("player-username", "move the icon to the corner", this);
                 goto endOfMovePlayerToCorner;
             }
         }
-        else if (Mod::get()->getSettingValue<int64_t>("move-player-to-corner") == 2)
+        else if (Mod::get()->getSettingValue<std::string>("move-player-to-corner") == "bottom right")
         {
             // test if it can't move the player to the bottom right corner
             if (Mod::get()->getSettingValue<bool>("replace-more-games-w-texture"))
@@ -316,7 +291,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
                 else if (!pfb) label = "profile-button";
                 else if (!user) label = "player-username";
 
-                alert(label, "replace the more games button with the texture selector", this);
+                gdtutils::alert(label, "replace the more games button with the texture selector", this);
                 goto endOfMovePlayerToCorner;
             }
 
@@ -361,14 +336,14 @@ class $modify(TweakedMenuLayer, MenuLayer)
                 rsm->setPositionY(rsm->getPositionY() - 10);
             else
             {
-                alert("right-side-menu", "align the daily chest", this);
+                gdtutils::alert("right-side-menu", "align the daily chest", this);
                 goto endOfAlignDaily;
             }
         }
 
     endOfAlignDaily:
 
-        if (Mod::get()->getSettingValue<bool>("move-daily") && (Mod::get()->getSettingValue<int64_t>("move-player-to-corner") == 2))
+        if (Mod::get()->getSettingValue<bool>("move-daily") && (Mod::get()->getSettingValue<std::string>("move-player-to-corner") == "bottom right"))
         {
             auto alert = FLAlertLayer::create(
                 "Notice (from GDTweaks)",
@@ -390,7 +365,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
                 mgb->removeFromParent();
             else
             {
-                alert("more-games-button", "move the daily chest to the bottom right", this);
+                gdtutils::alert("more-games-button", "move the daily chest to the bottom right", this);
                 goto endOfMoveDaily;
             }
 
@@ -401,7 +376,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
             }
             else
             {
-                alert("daily-chest-button", "move the daily chest to the bottom right", this);
+                gdtutils::alert("daily-chest-button", "move the daily chest to the bottom right", this);
                 goto endOfMoveDaily;
             }
 
@@ -412,7 +387,7 @@ class $modify(TweakedMenuLayer, MenuLayer)
             }
             else
             {
-                alert("more-games-menu", "move the daily chest to the bottom right", this);
+                gdtutils::alert("more-games-menu", "move the daily chest to the bottom right", this);
                 goto endOfMoveDaily;
             }
         }
@@ -429,13 +404,13 @@ class $modify(TweakedMenuLayer, MenuLayer)
                     btm->updateLayout();
                 else
                 {
-                    alert("bottom-menu", "hide the achievements button", this);
+                    gdtutils::alert("bottom-menu", "hide the achievements button", this);
                     goto endOfHideAchievementsButton;
                 }
             }
             else
             {
-                alert("achievements-button", "hide the achievements button", this);
+                gdtutils::alert("achievements-button", "hide the achievements button", this);
                 goto endOfHideAchievementsButton;
             }
         }
@@ -452,13 +427,13 @@ class $modify(TweakedMenuLayer, MenuLayer)
                     btm->updateLayout();
                 else
                 {
-                    alert("bottom-menu", "hide the achievements button", this);
+                    gdtutils::alert("bottom-menu", "hide the achievements button", this);
                     goto endOfHideStatsButton;
                 }
             }
             else
             {
-                alert("stats-button", "move the daily chest to the bottom right", this);
+                gdtutils::alert("stats-button", "move the daily chest to the bottom right", this);
                 goto endOfHideStatsButton;
             }
         }
@@ -470,28 +445,28 @@ class $modify(TweakedMenuLayer, MenuLayer)
             auto bottomMenu = this->getChildByID("bottom-menu");
             if (!bottomMenu)
             {
-                alert("bottom-menu", "colourise the geode icon", this);
+                gdtutils::alert("bottom-menu", "colourise the geode icon", this);
                 goto endOfChangeGeodeIcon;
             }
 
             auto geodeBtn = bottomMenu->getChildByID("geode.loader/geode-button");
             if (!geodeBtn)
             {
-                alert("geode.loader/geode-button", "colourise the geode icon", this);
+                gdtutils::alert("geode.loader/geode-button", "colourise the geode icon", this);
                 goto endOfChangeGeodeIcon; // ??? no clue when this would happen but I have to check anyway
             }
 
             auto buttonSprite = typeinfo_cast<CircleButtonSprite*>(geodeBtn->getChildren()->objectAtIndex(0));
             if (!buttonSprite)
             {
-                alert("geode.loader/geode-button -> child 0", "colourise the geode icon", this);
+                gdtutils::alert("geode.loader/geode-button -> child 0", "colourise the geode icon", this);
                 goto endOfChangeGeodeIcon; // ??? no clue when this would happen either but I have to check anyway
             }
 
             auto geodeLogo = typeinfo_cast<CCSprite*>(buttonSprite->getChildren()->objectAtIndex(0));
             if (!geodeLogo)
             {
-                alert("geode.loader/geode-button -> child 0 -> child 0", "colourise the geode icon", this);
+                gdtutils::alert("geode.loader/geode-button -> child 0 -> child 0", "colourise the geode icon", this);
                 goto endOfChangeGeodeIcon; // ??? no clue when this would happen either either but I have to check anyway
             }
 
@@ -512,14 +487,14 @@ class $modify(TweakedMenuLayer, MenuLayer)
             auto bottomMenu = this->getChildByID("bottom-menu");
             if (!bottomMenu)
             {
-                alert("bottom-menu", "remove the geode exclamation mark", this);
+                gdtutils::alert("bottom-menu", "remove the geode exclamation mark", this);
                 goto endOfRemoveExclamation;
             }
 
             auto geodeBtn = bottomMenu->getChildByID("geode.loader/geode-button");
             if (!geodeBtn)
             {
-                alert("geode.loader/geode-button", "remove the geode exclamation mark", this);
+                gdtutils::alert("geode.loader/geode-button", "remove the geode exclamation mark", this);
                 goto endOfRemoveExclamation; // ??? no clue when this would happen but I have to check anyway
             }
 

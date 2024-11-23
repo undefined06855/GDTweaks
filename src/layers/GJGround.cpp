@@ -1,4 +1,3 @@
-// good luck reading it, i should probably split it up into multiple files
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GJGroundLayer.hpp>
 #include "../utils.hpp"
@@ -15,7 +14,7 @@ class $modify(GJGroundLayer)
 {
     static GJGroundLayer* create(int groundType, int lineType)
     {
-        if (!loadingMainMenu) return GJGroundLayer::create(groundType, lineType);
+        if (!gdtutils::loadingMainMenu) return GJGroundLayer::create(groundType, lineType);
 
         int64_t ground = Mod::get()->getSettingValue<int64_t>("force-ground");
 
@@ -29,8 +28,8 @@ class $modify(GJGroundLayer)
         }
         else if (Mod::get()->getSettingValue<bool>("randomise-main-menu-bg"))
         {
-            groundType = distGround(rng);
-            lineType = distGroundLine(rng);
+            groundType = distGround(gdtutils::rng);
+            lineType = distGroundLine(gdtutils::rng);
         }
 
         //std::cout << "abt to create" << std::endl;

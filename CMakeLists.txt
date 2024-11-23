@@ -6,10 +6,9 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
 project(GDTweaks VERSION 1.0.0)
 
-# Save this file every time you add a new file to layers (no need to make any changes to this file) 
 file(GLOB SOURCES
-	src/layers/*.cpp
-    src/main.cpp
+	src/*/*.cpp
+    src/*.cpp
 )
 
 # Set up the mod binary

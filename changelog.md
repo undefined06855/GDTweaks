@@ -1,4 +1,6 @@
 # GDTweaks Changelog
+## v1.13.0
+- Support for Geode 4.0.0 and GD 2.2074
 ## v1.12.7
 - Changed the scale of the texture loader button when "Replace "More Games" with texture pack" is enabled (suggested by avilax)
 ## v1.12.6

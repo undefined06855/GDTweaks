@@ -18,7 +18,7 @@ class $modify(LevelCell)
 				orbIcon->setVisible(false);
 			//else
 			//{
-			//	alert("orbs-icon", "remove the orbs label", this);
+			//	gdtutils::alert("orbs-icon", "remove the orbs label", this);
 			//	goto endOfRemoveOrbs;
 			//}
 
@@ -26,7 +26,7 @@ class $modify(LevelCell)
 				orbLabel->setVisible(false);
 			//else
 			//{
-			//	alert("orbs-label", "remove the orbs label", this);
+			//	gdtutils::alert("orbs-label", "remove the orbs label", this);
 			//	goto endOfRemoveOrbs;
 			//}
 		}

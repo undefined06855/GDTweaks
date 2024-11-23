@@ -7,7 +7,7 @@ using namespace geode::prelude;
 // "map-packs" + "move-betterinfo" + "map-packs-hof"
 class $modify(MyCreatorLayer, CreatorLayer)
 {
-    static void onModify(auto & self)
+    static void onModify(auto& self)
     {
         // run after betterinfo
         self.setHookPriority("CreatorLayer::init", -100);
@@ -61,7 +61,7 @@ class $modify(MyCreatorLayer, CreatorLayer)
                 std::string labelName = buttonChecks[i];
                 if (!this->getChildByIDRecursive(labelName))
                 {
-                    alert(labelName, "remove the map pack button", this);
+                    gdtutils::alert(labelName, "remove the map pack button", this);
                     goto endOfMapPacks;
                 }
             }
@@ -102,7 +102,7 @@ class $modify(MyCreatorLayer, CreatorLayer)
             }
             else
             {
-                alert("cvolton.betterinfo/main-button", "move the betterinfo button to the corner", this);
+                gdtutils::alert("cvolton.betterinfo/main-button", "move the betterinfo button to the corner", this);
                 goto endOfBetterInfo;
             }
         }
@@ -114,7 +114,7 @@ class $modify(MyCreatorLayer, CreatorLayer)
             auto mpb = this->getChildByIDRecursive("map-packs-button");
             if (!mpb)
             {
-                alert("map-packs-button", "replacing the Map Packs button with the Hall Of Fame", this);
+                gdtutils::alert("map-packs-button", "replacing the Map Packs button with the Hall Of Fame", this);
                 goto endOfHallOfFame;
             }
             mpb->setVisible(false);
@@ -135,7 +135,7 @@ class $modify(MyCreatorLayer, CreatorLayer)
             // this should exist in theory but might as well check
             if (!cbm)
             {
-                alert("creator-buttons-menu", "replacing the Map Packs button with the Hall Of Fame", this);
+                gdtutils::alert("creator-buttons-menu", "replacing the Map Packs button with the Hall Of Fame", this);
                 goto endOfHallOfFame;
             }
 

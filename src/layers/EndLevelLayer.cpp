@@ -17,7 +17,7 @@ class $modify(EndLevelLayer)
 				chain->setVisible(false);
             else
             {
-                alert("chain-left", "remove the chains from the level end screen", this);
+                gdtutils::alert("chain-left", "remove the chains from the level end screen", this);
                 goto endOfRemoveChains;
             }
 
@@ -25,7 +25,7 @@ class $modify(EndLevelLayer)
 				chain->setVisible(false);
 			else
 			{
-				alert("chain-right", "remove the chains from the level end screen", this);
+				gdtutils::alert("chain-right", "remove the chains from the level end screen", this);
 				goto endOfRemoveChains;
 			}
 		}

@@ -7,7 +7,7 @@ using namespace geode::prelude;
 // "fix-joystick-scroll"
 class $modify(LevelBrowserLayer)
 {
-    bool init(GJSearchObject * p0)
+    bool init(GJSearchObject* p0)
     {
         if (!LevelBrowserLayer::init(p0)) return false;
 
